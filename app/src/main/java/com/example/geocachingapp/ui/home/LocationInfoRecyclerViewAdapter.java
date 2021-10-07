@@ -14,7 +14,6 @@ import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link LocationInfo}.
- * TODO: Replace the implementation with code for your data type.
  */
 public class LocationInfoRecyclerViewAdapter extends RecyclerView.Adapter<LocationInfoRecyclerViewAdapter.ViewHolder> {
 

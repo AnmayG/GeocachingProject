@@ -57,12 +57,9 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
-    // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
     private int mColumnCount = 1;
 
-    // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
     public static HomeFragment newInstance(int columnCount) {
         HomeFragment fragment = new HomeFragment();
