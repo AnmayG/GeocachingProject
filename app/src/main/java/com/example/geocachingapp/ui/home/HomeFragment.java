@@ -65,8 +65,8 @@ public class HomeFragment extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static LocationInfoFragment newInstance(int columnCount) {
-        LocationInfoFragment fragment = new LocationInfoFragment();
+    public static HomeFragment newInstance(int columnCount) {
+        HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
