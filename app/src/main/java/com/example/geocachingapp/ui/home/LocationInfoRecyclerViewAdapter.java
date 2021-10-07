@@ -8,19 +8,19 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.geocachingapp.databinding.FragmentItemBinding;
-import com.example.geocachingapp.ui.home.placeholder.PlaceholderContent.PlaceholderItem;
+import com.example.geocachingapp.ui.home.LocationInfoRecycler.LocationInfoContent.LocationInfo;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link PlaceholderItem}.
+ * {@link RecyclerView.Adapter} that can display a {@link LocationInfo}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class LocationInfoRecyclerViewAdapter extends RecyclerView.Adapter<LocationInfoRecyclerViewAdapter.ViewHolder> {
 
-    private final List<PlaceholderItem> mValues;
+    private final List<LocationInfo> mValues;
 
-    public LocationInfoRecyclerViewAdapter(List<PlaceholderItem> items) {
+    public LocationInfoRecyclerViewAdapter(List<LocationInfo> items) {
         mValues = items;
     }
 
@@ -47,7 +47,7 @@ public class LocationInfoRecyclerViewAdapter extends RecyclerView.Adapter<Locati
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mIdView;
         public final TextView mContentView;
-        public PlaceholderItem mItem;
+        public LocationInfo mItem;
 
         public ViewHolder(FragmentItemBinding binding) {
             super(binding.getRoot());

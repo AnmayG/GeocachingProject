@@ -16,9 +16,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.geocachingapp.R;
 import com.example.geocachingapp.databinding.FragmentHomeBinding;
-import com.example.geocachingapp.ui.home.placeholder.PlaceholderContent;
+import com.example.geocachingapp.ui.home.LocationInfoRecycler.LocationInfoContent;
 
 public class HomeFragment extends Fragment {
 
@@ -54,7 +53,7 @@ public class HomeFragment extends Fragment {
         } else {
             view.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
-        view.setAdapter(new LocationInfoRecyclerViewAdapter(PlaceholderContent.ITEMS));
+        view.setAdapter(new LocationInfoRecyclerViewAdapter(LocationInfoContent.ITEMS));
         return root;
     }
 
@@ -65,8 +64,8 @@ public class HomeFragment extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static LocationInfoFragment newInstance(int columnCount) {
-        LocationInfoFragment fragment = new LocationInfoFragment();
+    public static HomeFragment newInstance(int columnCount) {
+        HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
