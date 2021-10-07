@@ -1,4 +1,4 @@
-package com.example.geocachingapp.ui.dashboard;
+package com.example.geocachingapp.ui.qrcode;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,24 +12,23 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.geocachingapp.R;
-import com.example.geocachingapp.databinding.FragmentDashboardBinding;
+import com.example.geocachingapp.databinding.FragmentQrcodeBinding;
 
-public class DashboardFragment extends Fragment {
+public class QRCodeFragment extends Fragment {
 
-    private DashboardViewModel dashboardViewModel;
-    private FragmentDashboardBinding binding;
+    private QRCodeViewModel QRCodeViewModel;
+    private FragmentQrcodeBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        dashboardViewModel =
-                new ViewModelProvider(this).get(DashboardViewModel.class);
+        QRCodeViewModel =
+                new ViewModelProvider(this).get(QRCodeViewModel.class);
 
-        binding = FragmentDashboardBinding.inflate(inflater, container, false);
+        binding = FragmentQrcodeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textDashboard;
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        final TextView textView = binding.textNotifications;
+        QRCodeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
