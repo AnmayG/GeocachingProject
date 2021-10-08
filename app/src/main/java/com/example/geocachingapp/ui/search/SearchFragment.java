@@ -22,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.geocachingapp.R;
@@ -183,12 +182,7 @@ public class SearchFragment extends Fragment {
         binding = FragmentSearchBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        searchViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                System.out.println(TAG + " " + s);
-            }
-        });
+        searchViewModel.getText().observe(getViewLifecycleOwner(), s -> System.out.println(TAG + " " + s));
 
         // Locate the UI widgets.
         mStartUpdatesButton = binding.startUpdatesButton;
@@ -242,15 +236,6 @@ public class SearchFragment extends Fragment {
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         mSettingsClient = LocationServices.getSettingsClient(requireActivity());
 
-        // Get the compass targets running
-        // TODO: Fix this, currently set to Conant's location
-        // Conant is located at 42.0363, -88.0620
-        LatLng tempTarget = new LatLng(42.0363, -88.0620);
-        target.setLatitude(tempTarget.latitude);
-        target.setLongitude(tempTarget.longitude);
-        allCoordinates[0] = null;
-        allCoordinates[1] = tempTarget;
-
         // Kick off the process of building the LocationCallback, LocationRequest, and
         // LocationSettingsRequest objects.
         createLocationCallback();
@@ -273,6 +258,25 @@ public class SearchFragment extends Fragment {
                     .apiKey(getString(R.string.google_maps_key))
                     .build();
         }
+
+        searchViewModel =
+                new ViewModelProvider(this).get(SearchViewModel.class);
+
+        // Get the compass targets running
+        // TODO: Fix this, currently set to Conant's location
+        // Conant is located at 42.0363, -88.0620
+        final LatLng[] tempTarget = {new LatLng(42.0363, -88.0620)};
+        allCoordinates[0] = null;
+        allCoordinates[1] = tempTarget[0];
+        searchViewModel.getLatLng().observe(getViewLifecycleOwner(), s -> {
+            if(s != null) {
+                target.setLatitude(s.latitude);
+                target.setLongitude(s.longitude);
+            } else {
+                target.setLatitude(tempTarget[0].latitude);
+                target.setLongitude(tempTarget[0].longitude);
+            }
+        });
     }
 
     /**
@@ -323,7 +327,7 @@ public class SearchFragment extends Fragment {
      * updates.
      */
     private void createLocationRequest() {
-        mLocationRequest = new LocationRequest();
+        mLocationRequest = LocationRequest.create();
 
         // Sets the desired interval for active location updates. This interval is
         // inexact. You may not receive updates at all if no location sources are available, or
@@ -516,7 +520,7 @@ public class SearchFragment extends Fragment {
     // https://www.youtube.com/watch?v=f47L1SL5S0o&list=PLgCYzUzKIBE-SZUrVOsbYMzH7tPigT3gi&index=19
     // http://project-osrm.org/docs/v5.5.1/api/?language=cURL#general-options
     private void calculateDirections(LatLng start, LatLng end) {
-        Log.d(TAG, "starting calculation");
+        Log.d(TAG, "starting calculation " + start + " " + end);
     }
 
     public void zoomMap() {

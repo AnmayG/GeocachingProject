@@ -1,9 +1,12 @@
 <resources>
     <string name="app_name">Geocaching App</string>
+
+    <!-- fragment titles -->
     <string name="title_home">Home</string>
     <string name="title_dashboard">Search</string>
     <string name="title_notifications">Add</string>
 
+    <!-- location -->
     <string name="latitude_label">Latitude</string>
     <string name="longitude_label">Longitude</string>
     <string name="last_update_time_label">Last location update time</string>
@@ -14,9 +17,15 @@
     <string name="location_settings_inadequate_warning">The location settings on the device are not
         adequate to run this sample. Fix in Settings.</string>
 
+    <!-- permissions -->
     <string name="permission_rationale">Location permission is needed for core functionality</string>
     <string name="permission_denied_explanation">Permission was denied, but is needed for core
         functionality.</string>
     <string name="settings">Settings</string>
     <string name="compass_description">Compass</string>
+
+    <!-- qr code generation -->
+    <string name="qr_code">qr_code</string>
+    <string name="enter_your_info">Enter your info</string>
+    <string name="generate_qr_code">Generate QR Code</string>
 </resources>
