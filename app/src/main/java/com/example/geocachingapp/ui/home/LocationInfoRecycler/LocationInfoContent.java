@@ -1,6 +1,10 @@
 package com.example.geocachingapp.ui.home.LocationInfoRecycler;
 
+import android.location.Location;
+
 import androidx.annotation.NonNull;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +33,9 @@ public class LocationInfoContent {
     static {
         // Add some sample items.
         for (int i = 1; i <= COUNT; i++) {
-            addItem(createLocationInfoItem(i));
+            double lat = Math.random() + 41.5;
+            double lon = -87.5 - Math.random();
+            addItem(createLocationInfoItem(i, lat, lon));
         }
     }
 
@@ -38,8 +44,8 @@ public class LocationInfoContent {
         ITEM_MAP.put(item.id, item);
     }
 
-    private static LocationInfo createLocationInfoItem(int position) {
-        return new LocationInfo(String.valueOf(position), "Item " + position, makeDetails(position));
+    private static LocationInfo createLocationInfoItem(int position, double lat, double lon) {
+        return new LocationInfo(String.valueOf(position), lat + ", " + lon, makeDetails(position), lat, lon);
     }
 
     private static String makeDetails(int position) {
@@ -58,11 +64,13 @@ public class LocationInfoContent {
         public final String id;
         public final String content;
         public final String details;
+        public final LatLng location;
 
-        public LocationInfo(String id, String content, String details) {
+        public LocationInfo(String id, String content, String details, double lat, double lon) {
             this.id = id;
             this.content = content;
             this.details = details;
+            this.location = new LatLng(lat, lon);
         }
 
         @NonNull
