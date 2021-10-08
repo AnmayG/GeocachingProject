@@ -1,21 +1,16 @@
 package com.example.geocachingapp.ui.qrcode;
 
-import static androidx.core.content.ContextCompat.getSystemService;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,15 +19,12 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.geocachingapp.R;
 import com.example.geocachingapp.databinding.FragmentQrcodeBinding;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.zxing.WriterException;
+import com.google.zxing.BarcodeFormat;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.Objects;
-
-import androidmads.library.qrgenearator.QRGContents;
-import androidmads.library.qrgenearator.QRGEncoder;
 
 public class QRCodeFragment extends Fragment {
 
@@ -44,8 +36,6 @@ public class QRCodeFragment extends Fragment {
     private ImageView qrCodeIV;
     private TextInputLayout dataEdt;
     private Button generateQrBtn;
-    Bitmap bitmap;
-    QRGEncoder qrgEncoder;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -72,7 +62,8 @@ public class QRCodeFragment extends Fragment {
         generateQrBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Objects.requireNonNull(dataEdt.getEditText()).getText().toString().equals("")) {
+                String textIn = Objects.requireNonNull(dataEdt.getEditText()).getText().toString();
+                if (textIn.equals("")) {
 
                     // if the edittext inputs are empty then execute
                     // this method showing a toast message.
@@ -103,19 +94,12 @@ public class QRCodeFragment extends Fragment {
 
                     // setting this dimensions inside our qr code
                     // encoder to generate our qr code.
-                    qrgEncoder = new QRGEncoder(Objects.requireNonNull(
-                            dataEdt.getEditText()).getText().toString(),
-                            null, QRGContents.Type.TEXT, dimen);
                     try {
-                        // getting our qrcode in the form of bitmap.
-                        bitmap = qrgEncoder.encodeAsBitmap();
-                        // the bitmap is set inside our image
-                        // view using .setimagebitmap method.
+                        BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                        Bitmap bitmap = barcodeEncoder.encodeBitmap(textIn, BarcodeFormat.QR_CODE, 400, 400);
                         qrCodeIV.setImageBitmap(bitmap);
-                    } catch (WriterException e) {
-                        // this method is called for
-                        // exception handling.
-                        Log.e("qrgencoder", e.toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }
