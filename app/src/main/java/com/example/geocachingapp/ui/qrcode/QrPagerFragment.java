@@ -12,6 +12,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.geocachingapp.databinding.FragmentQrPagerBinding;
+import com.example.geocachingapp.ui.qrcode.parts.QrBuildFragment;
 import com.example.geocachingapp.ui.qrcode.parts.QrMakeFragment;
 import com.example.geocachingapp.ui.qrcode.parts.QrScanFragment;
 import com.google.android.material.tabs.TabLayout;
@@ -69,16 +70,15 @@ public class QrPagerFragment extends Fragment {
         public Fragment createFragment(int position) {
             switch (position) {
                 case 0: return QrMakeFragment.newInstance();
-                case 1: return QrScanFragment.newInstance(0);
-                // TODO: add configure fragment
+                case 1: return QrScanFragment.newInstance();
+                case 2: return QrBuildFragment.newInstance();
             }
             return QrMakeFragment.newInstance();
         }
 
         @Override
         public int getItemCount() {
-            // increase to 3 when creating configure
-            return 2;
+            return 3;
         }
     }
 }

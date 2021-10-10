@@ -8,6 +8,15 @@
 
     <!--We are using this image
         view to display our QR code-->
+    <ImageView
+        android:id="@+id/idIVQrcode"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:contentDescription="@string/qr_code" />
 
     <LinearLayout
         android:id="@+id/createLayout"
@@ -44,16 +53,6 @@
             android:layout_marginStart="4dp"
             android:layout_marginEnd="8dp"/>
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/idIVQrcode"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="@string/qr_code" />
 
     <Button
         android:id="@+id/printButton"

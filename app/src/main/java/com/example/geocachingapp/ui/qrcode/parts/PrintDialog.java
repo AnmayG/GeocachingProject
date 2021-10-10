@@ -34,22 +34,18 @@ public class PrintDialog extends BottomSheetDialogFragment {
         QRCodeViewModel =
                 new ViewModelProvider(requireActivity()).get(QRCodeViewModel.class);
 
-        print_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                Bitmap codeBitmap = QRCodeViewModel.getQrCode().getValue();
-                if(codeBitmap == null) {
-                    Toast.makeText(requireActivity(),
-                            "Code not generated", Toast.LENGTH_SHORT)
-                            .show();
-                    return;
-                }
-                PrintHelper photoPrinter = new PrintHelper(requireActivity());
-                photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
-                photoPrinter.printBitmap("New Geocache QR Code", codeBitmap);
-                dismiss();
+        print_button.setOnClickListener(v1 -> {
+            Bitmap codeBitmap = QRCodeViewModel.getQrCode().getValue();
+            if(codeBitmap == null) {
+                Toast.makeText(requireActivity(),
+                        "Code not generated", Toast.LENGTH_SHORT)
+                        .show();
+                return;
             }
+            PrintHelper photoPrinter = new PrintHelper(requireActivity());
+            photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);
+            photoPrinter.printBitmap("New Geocache QR Code", codeBitmap);
+            dismiss();
         });
 
         return v;

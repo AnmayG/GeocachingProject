@@ -2,33 +2,28 @@ package com.example.geocachingapp.ui.qrcode.parts;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.print.PrintHelper;
 
-import com.example.geocachingapp.R;
 import com.example.geocachingapp.databinding.FragmentQrMakeBinding;
 import com.example.geocachingapp.ui.qrcode.QRCodeViewModel;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import org.apache.commons.codec.binary.Hex;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.security.NoSuchAlgorithmException;
@@ -38,6 +33,7 @@ import java.security.spec.KeySpec;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -79,6 +75,9 @@ public class QrMakeFragment extends Fragment {
         // initializing onclick listener for button
         createQrButton.setOnClickListener(v -> generateQr());
 
+        QRCodeViewModel.setQrCode(null);
+        qrCodeImageView.setImageBitmap(null);
+
         printButton = binding.printButton;
 
         if(nameInputLayout.getEditText() != null) {
@@ -92,12 +91,9 @@ public class QrMakeFragment extends Fragment {
             });
         }
 
-        printButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PrintDialog bottomSheet = new PrintDialog();
-                bottomSheet.show(requireActivity().getSupportFragmentManager(), "ModalBottomSheet");
-            }
+        printButton.setOnClickListener(view -> {
+            PrintDialog bottomSheet = new PrintDialog();
+            bottomSheet.show(requireActivity().getSupportFragmentManager(), "ModalBottomSheet");
         });
 
         return root;
@@ -117,9 +113,9 @@ public class QrMakeFragment extends Fragment {
 
         // see next section for ´generateVerificationKey´ method
         Map<String, String> qrCodeDataMap = new HashMap<>();
-        // qrCodeDataMap.put("Name", id);
+        qrCodeDataMap.put("Name", id.isEmpty() ? "No name provided" : id);
         try {
-            qrCodeDataMap.put("Key", generateVerificationKey(id));
+            qrCodeDataMap.put("Key", generateVerificationKey(id + getSaltString()));
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             e.printStackTrace();
         }
@@ -135,6 +131,19 @@ public class QrMakeFragment extends Fragment {
         }
     }
 
+    // https://stackoverflow.com/questions/20536566/creating-a-random-string-with-a-z-and-0-9-in-java/20536597
+    protected String getSaltString() {
+        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        while (salt.length() < 18) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        return salt.toString();
+
+    }
+
     public String generateVerificationKey(String str) throws NoSuchAlgorithmException,
                                                              InvalidKeySpecException {
         SecureRandom random = new SecureRandom();
@@ -143,7 +152,7 @@ public class QrMakeFragment extends Fragment {
         KeySpec spec = new PBEKeySpec(str.toCharArray(), salt, 65536, 128);
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
         byte[] hash = factory.generateSecret(spec).getEncoded();
-        return new String(hash);
+        return new String(Hex.encodeHex(hash));
     }
 
     @Override

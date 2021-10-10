@@ -14,8 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.geocachingapp.databinding.FragmentQrScanBinding;
+import com.example.geocachingapp.ui.qrcode.QRCodeViewModel;
 
 import eu.livotov.labs.android.camview.ScannerLiveView;
 import eu.livotov.labs.android.camview.scanner.decoder.zxing.ZXDecoder;
@@ -27,24 +29,27 @@ import eu.livotov.labs.android.camview.scanner.decoder.zxing.ZXDecoder;
 public class QrScanFragment extends Fragment {
 
     private FragmentQrScanBinding binding;
+    private com.example.geocachingapp.ui.qrcode.QRCodeViewModel QRCodeViewModel;
 
     private ScannerLiveView camera;
 
-    public static QrScanFragment newInstance(int id) {
-        System.out.println(id);
+    public static QrScanFragment newInstance() {
         return new QrScanFragment();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+                // Inflate the layout for this fragment
         binding = FragmentQrScanBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         if (!checkPermission()) {
             requestPermission();
         }
+
+        QRCodeViewModel =
+                new ViewModelProvider(requireActivity()).get(QRCodeViewModel.class);
 
         camera = binding.camview;
 
@@ -66,8 +71,8 @@ public class QrScanFragment extends Fragment {
     }
 
     public void showQrResult(String result) {
-        System.out.println(result);
         Toast.makeText(requireContext(), result, Toast.LENGTH_LONG).show();
+        QRCodeViewModel.setReadData(result);
     }
 
     @Override
@@ -77,7 +82,7 @@ public class QrScanFragment extends Fragment {
         // 0.5 is the area where we have
         // to place red marker for scanning.
         decoder.setScanAreaPercent(0.8);
-        // below method will set secoder to camera.
+        // below method will set decoder to camera.
         camera.setDecoder(decoder);
         camera.startScanner();
     }

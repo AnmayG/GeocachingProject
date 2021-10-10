@@ -58,4 +58,7 @@
     <!-- bottom sheet strings -->
     <string name="print_options">Print Options</string>
     <string name="default_print">Print Default</string>
+
+    <!-- Configure QR Code -->
+    <string name="not_scanned_text">QR Code not scanned. Please create a QR code, then scan it to finish creating your new geocache.</string>
 </resources>
