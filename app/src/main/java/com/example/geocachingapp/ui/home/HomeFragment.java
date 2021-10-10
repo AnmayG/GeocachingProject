@@ -26,7 +26,7 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
 
     public HomeFragment() {
-        // Empty fragment for free instantiation
+        // Empty fragment for free instantiation like orientation
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
