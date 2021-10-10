@@ -82,26 +82,6 @@ public class QRCodeFragment extends Fragment {
         generateQrBtn = binding.idBtnGenerateQR;
 
         // initializing onclick listener for button
-
-        if(dataEdt.getEditText() != null) {
-            dataEdt.getEditText().addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    // nothing
-                }
-
-                @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    generateQr();
-                }
-
-                @Override
-                public void afterTextChanged(Editable editable) {
-                    // nothing
-                }
-            });
-        }
-
         generateQrBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
