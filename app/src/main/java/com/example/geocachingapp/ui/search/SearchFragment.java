@@ -154,9 +154,10 @@ public class SearchFragment extends Fragment {
     private PolylineOptions currentOptions;
 
     /**
-     * Current location marker
+     * Markers for current location and target location
      */
     private Marker currentMarker;
+    private Marker targetMarker;
 
     /**
      * Storage of geocache coordinates
@@ -177,7 +178,7 @@ public class SearchFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         searchViewModel =
-                new ViewModelProvider(this).get(SearchViewModel.class);
+                new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
 
         binding = FragmentSearchBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -216,7 +217,7 @@ public class SearchFragment extends Fragment {
         public void onMapReady(@NonNull GoogleMap googleMap) {
             googleMap.getUiSettings().setCompassEnabled(true);
             mMap = googleMap;
-            mMap.addMarker(new MarkerOptions().position(allCoordinates[1]));
+            targetMarker = mMap.addMarker(new MarkerOptions().position(allCoordinates[1]));
 
             currentOptions = new PolylineOptions().clickable(true);
             mMap.addPolyline(currentOptions);
@@ -259,9 +260,6 @@ public class SearchFragment extends Fragment {
                     .build();
         }
 
-        searchViewModel =
-                new ViewModelProvider(this).get(SearchViewModel.class);
-
         // Get the compass targets running
         // TODO: Fix this, currently set to Conant's location
         // Conant is located at 42.0363, -88.0620
@@ -270,8 +268,12 @@ public class SearchFragment extends Fragment {
         allCoordinates[1] = tempTarget[0];
         searchViewModel.getLatLng().observe(getViewLifecycleOwner(), s -> {
             if(s != null) {
+                System.out.println(TAG + " " + s);
                 target.setLatitude(s.latitude);
                 target.setLongitude(s.longitude);
+                allCoordinates[1] = s;
+                if(targetMarker != null) targetMarker.remove();
+                if(mMap != null) targetMarker = mMap.addMarker(new MarkerOptions().position(s));
             } else {
                 target.setLatitude(tempTarget[0].latitude);
                 target.setLongitude(tempTarget[0].longitude);
@@ -502,7 +504,7 @@ public class SearchFragment extends Fragment {
     private void updateMapWithLocation() {
         if (mCurrentLocation != null) {
             // If it's going too slowly then they're stopped and the marker shouldn't move.
-            if (mCurrentLocation.getSpeed() > 0.2 || allCoordinates[0] == null) {
+            if (mCurrentLocation.getSpeed() > 1 || allCoordinates[0] == null) {
                 LatLng temp = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
                 allCoordinates[0] = temp;
                 System.out.println("SPEED " + mCurrentLocation.getSpeed());

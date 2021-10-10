@@ -24,4 +24,8 @@ public class SearchViewModel extends ViewModel {
     public LiveData<LatLng> getLatLng() {
         return mLatLng;
     }
+
+    public void setLatLng(LatLng v) {
+        mLatLng.setValue(v);
+    }
 }

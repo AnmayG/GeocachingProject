@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.geocachingapp.databinding.FragmentHomeBinding;
 import com.example.geocachingapp.ui.home.LocationInfoRecycler.LocationInfoContent;
+import com.example.geocachingapp.ui.search.SearchViewModel;
 
 public class HomeFragment extends Fragment {
 
@@ -31,7 +32,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+                new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -52,7 +53,11 @@ public class HomeFragment extends Fragment {
         } else {
             view.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
-        view.setAdapter(new LocationInfoRecyclerViewAdapter(LocationInfoContent.ITEMS));
+
+        SearchViewModel searchViewModel =
+                new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+
+        view.setAdapter(new LocationInfoRecyclerViewAdapter(LocationInfoContent.ITEMS, searchViewModel));
         return root;
     }
 
