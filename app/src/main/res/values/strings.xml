@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name">Geocaching App</string>
 
-    <!-- fragment titles -->
+    <!-- Fragment Titles -->
     <string name="title_home">Home</string>
     <string name="title_dashboard">Search</string>
     <string name="title_notifications">Add</string>
 
-    <!-- location -->
+    <!-- Location -->
     <string name="latitude_label">Latitude</string>
     <string name="longitude_label">Longitude</string>
     <string name="last_update_time_label">Last location update time</string>
@@ -17,17 +17,18 @@
     <string name="location_settings_inadequate_warning">The location settings on the device are not
         adequate to run this sample. Fix in Settings.</string>
 
-    <!-- permissions -->
+    <!-- Permissions -->
     <string name="permission_rationale">Location permission is needed for core functionality</string>
     <string name="permission_denied_explanation">Permission was denied, but is needed for core
         functionality.</string>
     <string name="settings">Settings</string>
     <string name="compass_description">Compass</string>
 
-    <!-- qr code generation -->
+    <!-- QR Code Generation -->
     <string name="qr_code">qr_code</string>
     <string name="enter_your_info">Enter a name for your new geocache!</string>
     <string name="generate_qr_code">Generate QR Code</string>
+
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
@@ -43,4 +44,14 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="profile">Profile</string>
+
+    <string name="title_settings">Settings</string>
+
+    <!-- Scan QR Code -->
+    <string name="scan_qr_code">Scan QR Code</string>
+
+    <!-- Copied from https://www.geeksforgeeks.org/how-to-read-qr-code-using-camview-library-in-android/ -->
+    <string name="toggle_flash">Toggle Flash</string>
+    <string name="action_settings">Settings</string>
+    <string name="scanned_data">Scanned Data</string>
 </resources>

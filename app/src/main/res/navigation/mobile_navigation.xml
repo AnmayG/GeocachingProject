@@ -23,12 +23,12 @@
 
     <fragment
         android:id="@+id/navigation_qrcode"
-        android:name="com.example.geocachingapp.ui.qrcode.QRCodeFragment"
+        android:name="com.example.geocachingapp.ui.qrcode.QrPagerFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_qrcode" />
+        tools:layout="@layout/fragment_qr_pager" />
 
     <fragment
         android:id="@+id/navigation_settings"
         android:name="com.example.geocachingapp.SettingsFragment"
-        android:label="Settings" />
+        android:label="@string/title_settings" />
 </navigation>
