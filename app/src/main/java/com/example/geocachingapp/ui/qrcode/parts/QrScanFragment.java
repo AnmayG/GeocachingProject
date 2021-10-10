@@ -30,6 +30,11 @@ public class QrScanFragment extends Fragment {
 
     private ScannerLiveView camera;
 
+    public static QrScanFragment newInstance(int id) {
+        System.out.println(id);
+        return new QrScanFragment();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -45,27 +50,16 @@ public class QrScanFragment extends Fragment {
 
         camera.setScannerViewEventListener(new ScannerLiveView.ScannerViewEventListener() {
             @Override
-            public void onScannerStarted(ScannerLiveView scanner) {
-                // method is called when scanner is started
-                Toast.makeText(requireActivity(), "Scanner Started", Toast.LENGTH_SHORT).show();
-            }
+            public void onScannerStarted(ScannerLiveView scanner) {}
 
             @Override
-            public void onScannerStopped(ScannerLiveView scanner) {
-                // method is called when scanner is stoped.
-                Toast.makeText(requireActivity(), "Scanner Stopped", Toast.LENGTH_SHORT).show();
-            }
+            public void onScannerStopped(ScannerLiveView scanner) {}
 
             @Override
-            public void onScannerError(Throwable err) {
-                // method is called when scanner gives some error.
-                Toast.makeText(requireActivity(), "Scanner Error: " + err.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+            public void onScannerError(Throwable err) { Toast.makeText(requireActivity(), "Scanner Error: " + err.getMessage(), Toast.LENGTH_SHORT).show(); }
 
             @Override
-            public void onCodeScanned(String data) {
-                showQrResult(data);
-            }
+            public void onCodeScanned(String data) { showQrResult(data); }
         });
 
         return root;

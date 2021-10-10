@@ -2,25 +2,29 @@ package com.example.geocachingapp.ui.qrcode.parts;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.print.PrintHelper;
 
+import com.example.geocachingapp.R;
 import com.example.geocachingapp.databinding.FragmentQrMakeBinding;
 import com.example.geocachingapp.ui.qrcode.QRCodeViewModel;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
@@ -45,38 +49,75 @@ public class QrMakeFragment extends Fragment {
 
     // variables for imageview, edittext,
     // button, bitmap and qrencoder.
-    private ImageView qrCodeIV;
-    private TextInputLayout dataEdt;
-    private Button generateQrBtn;
+    private ImageView qrCodeImageView;
+    private TextInputLayout nameInputLayout;
+    private Button createQrButton;
+    private Button printButton;
 
+    private Bitmap codeBitmap;
+
+    public static QrMakeFragment newInstance() {
+        return new QrMakeFragment();
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         QRCodeViewModel =
                 new ViewModelProvider(requireActivity()).get(QRCodeViewModel.class);
 
+        QRCodeViewModel.getText().observe(requireActivity(), s -> System.out.println("QR Code " + s));
+
         binding = FragmentQrMakeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        QRCodeViewModel.getText().observe(getViewLifecycleOwner(), s -> System.out.println("QR Code " + s));
-
         // initializing all variables.
-        qrCodeIV = binding.idIVQrcode;
-        dataEdt =  binding.idEdt;
-        generateQrBtn = binding.idBtnGenerateQR;
+        qrCodeImageView = binding.idIVQrcode;
+        nameInputLayout =  binding.idEdt;
+        nameInputLayout.setFocusableInTouchMode(true);
+        createQrButton = binding.idBtnGenerateQR;
 
         // initializing onclick listener for button
-        generateQrBtn.setOnClickListener(v -> generateQr());
+        createQrButton.setOnClickListener(v -> generateQr());
+
+        printButton = binding.printButton;
+
+        if(nameInputLayout.getEditText() != null) {
+            nameInputLayout.getEditText().setOnKeyListener((v, keyCode, event) -> {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    generateQr();
+                    return true;
+                }
+                return false;
+            });
+        }
+
+        printButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PrintDialog bottomSheet = new PrintDialog();
+                bottomSheet.show(requireActivity().getSupportFragmentManager(), "ModalBottomSheet");
+            }
+        });
 
         return root;
     }
 
+    public void hideKeyboard() {
+        nameInputLayout.requestFocus();
+
+        InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(nameInputLayout.getWindowToken(), 0);
+    }
+
     public void generateQr() {
-        String id = Objects.requireNonNull(dataEdt.getEditText()).getText().toString();
+        hideKeyboard();
+
+        String id = Objects.requireNonNull(nameInputLayout.getEditText()).getText().toString();
 
         // see next section for ´generateVerificationKey´ method
         Map<String, String> qrCodeDataMap = new HashMap<>();
-        qrCodeDataMap.put("Name", id);
+        // qrCodeDataMap.put("Name", id);
         try {
             qrCodeDataMap.put("Key", generateVerificationKey(id));
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
@@ -84,33 +125,13 @@ public class QrMakeFragment extends Fragment {
         }
 
         String textIn = new JSONObject(qrCodeDataMap).toString();
-
-        if (textIn.equals("")) {
-
-            // if the edittext inputs are empty then execute
-            // this method showing a toast message.
-            Toast.makeText(requireActivity(),
-                    "Please enter a name for your geocache.", Toast.LENGTH_SHORT).show();
-        } else {
-            // below line is for getting the windowmanager service.
-            WindowManager manager =
-                    ((WindowManager) requireActivity().getSystemService(Context.WINDOW_SERVICE));
-
-            // initializing a variable for default display.
-            Display display = manager.getDefaultDisplay();
-
-            // creating a variable for point which is to be displayed in QR Code.
-            Point point = new Point();
-            display.getSize(point);
-
-            // setting this dimensions inside our qr code encoder to generate our qr code.
-            try {
-                BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-                Bitmap bitmap = barcodeEncoder.encodeBitmap(textIn, BarcodeFormat.QR_CODE, 400, 400);
-                qrCodeIV.setImageBitmap(bitmap);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+            codeBitmap = barcodeEncoder.encodeBitmap(textIn, BarcodeFormat.QR_CODE, 400, 400);
+            qrCodeImageView.setImageBitmap(codeBitmap);
+            QRCodeViewModel.setQrCode(codeBitmap);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

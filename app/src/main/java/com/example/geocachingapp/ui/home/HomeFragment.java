@@ -37,7 +37,7 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        homeViewModel.getText().observe(requireActivity(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 System.out.println("HomeFragment " + s);

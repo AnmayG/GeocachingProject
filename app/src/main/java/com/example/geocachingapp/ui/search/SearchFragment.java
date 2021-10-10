@@ -183,7 +183,7 @@ public class SearchFragment extends Fragment {
         binding = FragmentSearchBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        searchViewModel.getText().observe(getViewLifecycleOwner(), s -> System.out.println(TAG + " " + s));
+        searchViewModel.getText().observe(requireActivity(), s -> System.out.println(TAG + " " + s));
 
         // Locate the UI widgets.
         mStartUpdatesButton = binding.startUpdatesButton;
@@ -266,7 +266,7 @@ public class SearchFragment extends Fragment {
         final LatLng[] tempTarget = {new LatLng(42.0363, -88.0620)};
         allCoordinates[0] = null;
         allCoordinates[1] = tempTarget[0];
-        searchViewModel.getLatLng().observe(getViewLifecycleOwner(), s -> {
+        searchViewModel.getLatLng().observe(requireActivity(), s -> {
             if(s != null) {
                 System.out.println(TAG + " " + s);
                 target.setLatitude(s.latitude);
