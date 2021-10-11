@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.geocachingapp.AppViewModel;
 import com.example.geocachingapp.databinding.FragmentHomeBinding;
 import com.example.geocachingapp.ui.home.LocationInfoRecycler.LocationInfoContent;
 import com.example.geocachingapp.ui.search.SearchViewModel;
@@ -23,6 +24,7 @@ import com.example.geocachingapp.ui.search.SearchViewModel;
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
+    private AppViewModel mAppViewModel;
     private FragmentHomeBinding binding;
 
     public HomeFragment() {
@@ -37,12 +39,7 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        homeViewModel.getText().observe(requireActivity(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                System.out.println("HomeFragment " + s);
-            }
-        });
+        homeViewModel.getText().observe(requireActivity(), s -> System.out.println("HomeFragment " + s));
 
         RecyclerView view = binding.list;
 
@@ -57,7 +54,15 @@ public class HomeFragment extends Fragment {
         SearchViewModel searchViewModel =
                 new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
 
-        view.setAdapter(new LocationInfoRecyclerViewAdapter(LocationInfoContent.ITEMS, searchViewModel));
+        LocationInfoRecyclerViewAdapter adapter = new LocationInfoRecyclerViewAdapter(LocationInfoContent.ITEMS, searchViewModel);
+        view.setAdapter(adapter);
+
+        mAppViewModel = new ViewModelProvider(requireActivity()).get(AppViewModel.class);
+
+        mAppViewModel.getAllCodes().observe(requireActivity(), codes -> {
+            // Update the cached copy of the words in the adapter.
+            // adapter.submitList(codes)
+        });
         return root;
     }
 

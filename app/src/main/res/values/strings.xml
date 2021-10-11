@@ -65,4 +65,5 @@
     <string name="save_button_desc">Save</string>
     <string name="desc_field">Description</string>
     <string name="camera_button_desc">Add Picture</string>
+    <string name="home_fab_desc">Add QR Code</string>
 </resources>

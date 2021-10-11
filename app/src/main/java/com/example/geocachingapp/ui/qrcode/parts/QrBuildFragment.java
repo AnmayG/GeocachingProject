@@ -128,6 +128,7 @@ public class QrBuildFragment extends Fragment {
 
         // TODO: Add saving to the database or whatever
 
+
         QRCodeViewModel =
                 new ViewModelProvider(requireActivity()).get(com.example.geocachingapp.ui.qrcode.QRCodeViewModel.class);
 

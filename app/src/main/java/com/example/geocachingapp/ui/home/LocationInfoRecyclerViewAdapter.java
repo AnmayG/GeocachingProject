@@ -43,12 +43,9 @@ public class LocationInfoRecyclerViewAdapter extends RecyclerView.Adapter<Locati
         holder.mItem = mValues.get(position);
         holder.mIdView.setText(mValues.get(position).id);
         holder.mContentView.setText(mValues.get(position).content);
-        holder.mLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                searchViewModel.setLatLng(holder.mItem.location);
-                Navigation.findNavController(view).navigate(R.id.action_navigation_home_to_navigation_search);
-            }
+        holder.mLayout.setOnClickListener(view -> {
+            searchViewModel.setLatLng(holder.mItem.location);
+            Navigation.findNavController(view).navigate(R.id.action_navigation_home_to_navigation_search);
         });
     }
 
