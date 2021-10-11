@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/anmay/AndroidStudioProjects/GeocachingApp/app/src/main/res/drawable/bg_circle.xml" value="0.23489583333333333" />
         <entry key="..\:/Users/anmay/AndroidStudioProjects/GeocachingApp/app/src/main/res/drawable/geocache_logo.xml" value="0.403125" />
         <entry key="..\:/Users/anmay/AndroidStudioProjects/GeocachingApp/app/src/main/res/drawable/ic_geocache_logo_1.xml" value="0.403125" />
         <entry key="..\:/Users/anmay/AndroidStudioProjects/GeocachingApp/app/src/main/res/layout/activity_main.xml" value="0.28940217391304346" />
@@ -19,6 +20,7 @@
         <entry key="..\:/Users/anmay/AndroidStudioProjects/GeocachingApp/app/src/main/res/layout/fragment_qrcode.xml" value="0.21875" />
         <entry key="..\:/Users/anmay/AndroidStudioProjects/GeocachingApp/app/src/main/res/layout/fragment_settings.xml" value="0.21875" />
         <entry key="..\:/Users/anmay/AndroidStudioProjects/GeocachingApp/app/src/main/res/menu/bottom_nav_menu.xml" value="0.21875" />
+        <entry key="..\:/Users/anmay/AndroidStudioProjects/GeocachingApp/app/src/main/res/xml/file_paths.xml" value="0.21875" />
         <entry key="..\:/Users/anmay/AndroidStudioProjects/GeocachingApp/app/src/main/res/xml/root_preferences.xml" value="0.33" />
       </map>
     </option>

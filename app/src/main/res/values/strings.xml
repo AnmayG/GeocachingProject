@@ -11,8 +11,8 @@
     <string name="longitude_label">Longitude</string>
     <string name="last_update_time_label">Last location update time</string>
 
-    <string name="start_updates">Start updates</string>
-    <string name="stop_updates">Stop updates</string>
+    <string name="start_updates">Start</string>
+    <string name="stop_updates">Stop</string>
 
     <string name="location_settings_inadequate_warning">The location settings on the device are not
         adequate to run this sample. Fix in Settings.</string>
@@ -61,4 +61,8 @@
 
     <!-- Configure QR Code -->
     <string name="not_scanned_text">QR Code not scanned. Please create a QR code, then scan it to finish creating your new geocache.</string>
+    <string name="name_field">Name</string>
+    <string name="save_button_desc">Save</string>
+    <string name="desc_field">Description</string>
+    <string name="camera_button_desc">Add Picture</string>
 </resources>

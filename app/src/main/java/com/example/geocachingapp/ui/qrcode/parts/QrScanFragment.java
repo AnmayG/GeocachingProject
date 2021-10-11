@@ -71,7 +71,7 @@ public class QrScanFragment extends Fragment {
     }
 
     public void showQrResult(String result) {
-        Toast.makeText(requireContext(), result, Toast.LENGTH_LONG).show();
+        Toast.makeText(requireContext(), "Code scanned", Toast.LENGTH_SHORT).show();
         QRCodeViewModel.setReadData(result);
     }
 
