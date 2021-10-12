@@ -21,6 +21,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +37,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.geocachingapp.AppViewModel;
+import com.example.geocachingapp.MainActivity;
 import com.example.geocachingapp.R;
 import com.example.geocachingapp.database.QRCode;
 import com.example.geocachingapp.databinding.FragmentQrBuildBinding;
@@ -82,6 +85,7 @@ public class QrBuildFragment extends Fragment {
     private ImageView profileImageView;
     private TextInputLayout nameInput;
     private TextInputLayout descInput;
+    private GridView grid;
     private FloatingActionButton cameraButton;
     private FloatingActionButton saveButton;
 
@@ -156,6 +160,20 @@ public class QrBuildFragment extends Fragment {
 
         QRCodeViewModel.getReadData().observe(requireActivity(), this::readQrData);
 
+        CustomGrid adapter = new CustomGrid(requireActivity(), pics);
+        grid = binding.grid;
+        grid.setAdapter(adapter);
+        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                System.out.println(position + " " + (+ position));
+                Toast.makeText(requireContext(), "You Clicked at " + pics.get(+ position), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+
         return root;
     }
 
@@ -185,8 +203,6 @@ public class QrBuildFragment extends Fragment {
             bmp.recycle();
         }
 
-        // TODO: Get location
-
         Geocoder geocoder;
         List<Address> addresses;
         geocoder = new Geocoder(requireContext(), Locale.getDefault());
@@ -194,13 +210,7 @@ public class QrBuildFragment extends Fragment {
 
         try {
             addresses = geocoder.getFromLocation(lastLoc.getLatitude(), lastLoc.getLongitude(), 1);
-            String address = addresses.get(0).getAddressLine(0);
-            String city = addresses.get(0).getLocality();
-            String state = addresses.get(0).getAdminArea();
-            String country = addresses.get(0).getCountryName();
-            String postalCode = addresses.get(0).getPostalCode();
-            String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
-            addressThing = address;
+            addressThing = addresses.get(0).getAddressLine(0);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -270,8 +280,6 @@ public class QrBuildFragment extends Fragment {
         if (setProfile) {
             showInView(profileBackground);
             profileImageView.setVisibility(View.GONE);
-        } else {
-            // add to recycler
         }
     }
 

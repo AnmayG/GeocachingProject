@@ -82,6 +82,21 @@
                 android:hint="@string/desc_field" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <GridView
+            android:numColumns="auto_fit"
+            android:gravity="center"
+            android:columnWidth="100dp"
+            android:stretchMode="columnWidth"
+            android:layout_marginTop="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/grid"
+            app:layout_constraintTop_toBottomOf="@id/desc_input"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/cameraButton"
             android:layout_width="wrap_content"

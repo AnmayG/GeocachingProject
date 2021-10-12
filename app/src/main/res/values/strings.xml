@@ -67,4 +67,5 @@
     <string name="camera_button_desc">Add Picture</string>
     <string name="home_fab_desc">Add QR Code</string>
     <string name="start_tracking_button_text">Start Tracking</string>
+    <string name="photo">photo</string>
 </resources>
