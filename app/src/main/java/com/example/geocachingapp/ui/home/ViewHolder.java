@@ -1,5 +1,6 @@
 package com.example.geocachingapp.ui.home;
 
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,7 +8,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,12 +19,16 @@ import com.example.geocachingapp.databinding.FragmentItemBinding;
 import com.example.geocachingapp.ui.customViews.CircleImageView;
 import com.example.geocachingapp.ui.home.LocationInfoRecycler.LocationInfoContent;
 
+import java.util.Objects;
+
 public class ViewHolder extends RecyclerView.ViewHolder {
     public final TextView mIdView;
     public final TextView mContentView;
     public final CircleImageView mImageView;
     public final ConstraintLayout mLayout;
     public LocationInfoContent.LocationInfo mItem;
+    public Bitmap img;
+    public String address;
 
     public ViewHolder(View binding) {
         super(binding);
@@ -30,16 +37,18 @@ public class ViewHolder extends RecyclerView.ViewHolder {
         mImageView = binding.findViewById(R.id.profile_image_view);
         mLayout = binding.findViewById(R.id.constraintLayout);
         mLayout.setOnClickListener(view -> {
-            HomeFragment.searchViewModel.setLatLng(mItem.location);
-            Navigation.findNavController(view).navigate(R.id.action_navigation_home_to_navigation_search);
+            InfoDialog bottomSheet = new InfoDialog(this);
+            bottomSheet.show(((AppCompatActivity) binding.getContext()).getSupportFragmentManager(), "ModalBottomSheet");
         });
     }
 
-    public void bind(String name, String desc, String hash, byte[] picture, double lat, double lon) {
+    public void bind(String name, String desc, String hash, byte[] picture, double lat, double lon, String addr) {
         mIdView.setText(name);
-        mContentView.setText(desc);
+        mContentView.setText(addr);
+        address = addr;
         if(picture != null) {
-            mImageView.setImageBitmap(BitmapFactory.decodeByteArray(picture, 0, picture.length));
+            img = BitmapFactory.decodeByteArray(picture, 0, picture.length);
+            mImageView.setImageBitmap(img);
         }
         mItem = new LocationInfoContent.LocationInfo(hash, name, desc, lat, lon);
     }

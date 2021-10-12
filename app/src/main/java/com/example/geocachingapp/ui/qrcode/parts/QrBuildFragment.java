@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,9 +41,12 @@ import com.example.geocachingapp.databinding.FragmentQrBuildBinding;
 import com.example.geocachingapp.ui.customViews.CircleImageView;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -54,6 +59,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -170,16 +176,37 @@ public class QrBuildFragment extends Fragment {
         String name = Objects.requireNonNull(nameInput.getEditText()).getText().toString();
         String desc = Objects.requireNonNull(descInput.getEditText()).getText().toString();
 
-        Bitmap bmp = profilePic.copy(profilePic.getConfig(), true);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] profileArray = stream.toByteArray();
-        bmp.recycle();
+        byte[] profileArray = null;
+        if(profilePic != null) {
+            Bitmap bmp = profilePic.copy(profilePic.getConfig(), true);
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            profileArray = stream.toByteArray();
+            bmp.recycle();
+        }
 
         // TODO: Get location
 
+        Geocoder geocoder;
+        List<Address> addresses;
+        geocoder = new Geocoder(requireContext(), Locale.getDefault());
+        String addressThing = "";
+
+        try {
+            addresses = geocoder.getFromLocation(lastLoc.getLatitude(), lastLoc.getLongitude(), 1);
+            String address = addresses.get(0).getAddressLine(0);
+            String city = addresses.get(0).getLocality();
+            String state = addresses.get(0).getAdminArea();
+            String country = addresses.get(0).getCountryName();
+            String postalCode = addresses.get(0).getPostalCode();
+            String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
+            addressThing = address;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         appViewModel.insert(new QRCode(id, name, desc, profileArray,
-                lastLoc.getLatitude(), lastLoc.getLongitude(), pics));
+                lastLoc.getLatitude(), lastLoc.getLongitude(), pics, addressThing));
     }
 
     public void readQrData(String s) {
@@ -196,7 +223,7 @@ public class QrBuildFragment extends Fragment {
                 String id = readData.getString("Key");
                 notScannedView.setText(id);
                 String name = readData.getString("Name");
-                appViewModel.insert(new QRCode(id, name, "", null, 0, 0, null));
+                appViewModel.insert(new QRCode(id, name, "", null, 0, 0, null, ""));
                 if (nameInput.getEditText() != null) nameInput.getEditText().setText(name);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -307,6 +334,9 @@ public class QrBuildFragment extends Fragment {
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(requireContext(),
                         Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(),
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             return;
         }
 
@@ -318,6 +348,26 @@ public class QrBuildFragment extends Fragment {
                         lastLoc = location;
                     }
                 });
+
+        Log.d(TAG, "getCurrentLocation started");
+
+        fusedLocationClient.getCurrentLocation(LocationRequest.PRIORITY_HIGH_ACCURACY, new CancellationToken() {
+            @Override
+            public boolean isCancellationRequested() {
+                return false;
+            }
+
+            @NonNull
+            @Override
+            public CancellationToken onCanceledRequested(@NonNull OnTokenCanceledListener onTokenCanceledListener) {
+                return this;
+            }
+        }).addOnSuccessListener(location -> {
+            Log.d(TAG, "location created");
+            if (location != null) {
+                lastLoc = location;
+            }
+        });
     }
 
 }

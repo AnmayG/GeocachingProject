@@ -17,7 +17,7 @@ import java.util.concurrent.Executors;
 // https://developer.android.com/codelabs/android-room-with-a-view#7
 
 @Database(
-        version = 2,
+        version = 3,
         entities = {QRCode.class}
 )
 @TypeConverters({Converters.class})
@@ -60,6 +60,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             AppDatabase.class, "app_database")
                             .addCallback(sRoomDatabaseCallback)
                             .fallbackToDestructiveMigrationFrom(1)
+                            .fallbackToDestructiveMigrationFrom(2)
                             .build();
                 }
             }

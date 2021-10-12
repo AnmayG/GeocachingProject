@@ -36,7 +36,7 @@ public class LocationInfoRecyclerViewAdapter extends ListAdapter<QRCode, ViewHol
     public void onBindViewHolder(ViewHolder holder, int position) {
         QRCode current = getItem(position);
         holder.bind(current.getName(), current.getDescription(), current.getId(), current.getPicture(),
-                current.getLatitude(), current.getLongitude());
+                current.getLatitude(), current.getLongitude(), current.getAddress());
     }
 
     static class QRCodeDiff extends DiffUtil.ItemCallback<QRCode> {

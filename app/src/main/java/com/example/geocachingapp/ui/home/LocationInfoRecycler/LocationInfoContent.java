@@ -1,7 +1,5 @@
 package com.example.geocachingapp.ui.home.LocationInfoRecycler;
 
-import android.location.Location;
-
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.model.LatLng;

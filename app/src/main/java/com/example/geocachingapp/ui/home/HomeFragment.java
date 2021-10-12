@@ -12,14 +12,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.geocachingapp.AppViewModel;
+import com.example.geocachingapp.R;
 import com.example.geocachingapp.databinding.FragmentHomeBinding;
 import com.example.geocachingapp.ui.home.LocationInfoRecycler.LocationInfoContent;
 import com.example.geocachingapp.ui.search.SearchViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class HomeFragment extends Fragment {
 
@@ -55,6 +58,9 @@ public class HomeFragment extends Fragment {
         mAppViewModel = new ViewModelProvider(requireActivity()).get(AppViewModel.class);
         // Update the cached copy of the words in the adapter.
         mAppViewModel.getAllCodes().observe(requireActivity(), adapter::submitList);
+
+        FloatingActionButton button = binding.floatingActionButton;
+        button.setOnClickListener(view1 -> Navigation.findNavController(button).navigate(R.id.action_navigation_home_to_navigation_qrcode));
         return root;
     }
 
