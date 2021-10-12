@@ -8,15 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.FileProvider;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -29,7 +20,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.example.geocachingapp.AppViewModel;
 import com.example.geocachingapp.R;
+import com.example.geocachingapp.database.QRCode;
 import com.example.geocachingapp.databinding.FragmentQrBuildBinding;
 import com.example.geocachingapp.ui.customViews.CircleImageView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -38,11 +39,14 @@ import com.google.android.material.textfield.TextInputLayout;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,6 +57,7 @@ public class QrBuildFragment extends Fragment {
 
     private FragmentQrBuildBinding binding;
     private com.example.geocachingapp.ui.qrcode.QRCodeViewModel QRCodeViewModel;
+    private AppViewModel appViewModel;
     private static String TAG = "QrBuildFragment";
 
     private TextView notScannedView;
@@ -67,6 +72,8 @@ public class QrBuildFragment extends Fragment {
 
     private JSONObject readData;
     private boolean setProfile = true;
+    private Bitmap profilePic;
+    private final ArrayList<Bitmap> pics = new ArrayList<>();
 
     private final ActivityResultLauncher<Intent> cameraActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -126,8 +133,8 @@ public class QrBuildFragment extends Fragment {
         cameraButton.setOnClickListener(view -> takePicture(false));
         saveButton = binding.saveButton;
 
-        // TODO: Add saving to the database or whatever
-
+        appViewModel = new ViewModelProvider(requireActivity()).get(AppViewModel.class);
+        saveButton.setOnClickListener(view -> saveToDatabase());
 
         QRCodeViewModel =
                 new ViewModelProvider(requireActivity()).get(com.example.geocachingapp.ui.qrcode.QRCodeViewModel.class);
@@ -143,6 +150,27 @@ public class QrBuildFragment extends Fragment {
         readQrData(QRCodeViewModel.getReadData().getValue());
     }
 
+    public void saveToDatabase() {
+        String id = "";
+        try {
+            id = readData.getString("Key");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String name = Objects.requireNonNull(nameInput.getEditText()).getText().toString();
+        String desc = Objects.requireNonNull(descInput.getEditText()).getText().toString();
+
+        Bitmap bmp = profilePic;
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] profileArray = stream.toByteArray();
+        bmp.recycle();
+
+        // TODO: Get location
+        appViewModel.insert(new QRCode(id, name, desc, profileArray, 0, 0, pics));
+    }
+
     public void readQrData(String s) {
         Log.d(TAG, s + "");
         if(s == null) {
@@ -156,7 +184,9 @@ public class QrBuildFragment extends Fragment {
                 readData = new JSONObject(s);
                 String id = readData.getString("Key");
                 notScannedView.setText(id);
-                if(nameInput.getEditText() != null) nameInput.getEditText().setText(readData.getString("Name"));
+                String name = readData.getString("Name");
+                appViewModel.insert(new QRCode(id, name, "", null, 0, 0, null));
+                if(nameInput.getEditText() != null) nameInput.getEditText().setText(name);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -229,6 +259,9 @@ public class QrBuildFragment extends Fragment {
         bmOptions.inSampleSize = scaleFactor;
 
         Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath, bmOptions);
+        if(profilePic == null) profilePic = bitmap;
+        pics.add(bitmap);
+
         imageView.setImageBitmap(bitmap);
     }
 

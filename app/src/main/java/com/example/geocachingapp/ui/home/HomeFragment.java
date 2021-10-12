@@ -25,6 +25,7 @@ public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
     private AppViewModel mAppViewModel;
+    public static SearchViewModel searchViewModel;
     private FragmentHomeBinding binding;
 
     public HomeFragment() {
@@ -42,32 +43,22 @@ public class HomeFragment extends Fragment {
         homeViewModel.getText().observe(requireActivity(), s -> System.out.println("HomeFragment " + s));
 
         RecyclerView view = binding.list;
-
-        // Set the adapter
-        Context context = view.getContext();
-        if (mColumnCount <= 1) {
-            view.setLayoutManager(new LinearLayoutManager(context));
-        } else {
-            view.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-        }
-
-        SearchViewModel searchViewModel =
+        searchViewModel =
                 new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
 
-        LocationInfoRecyclerViewAdapter adapter = new LocationInfoRecyclerViewAdapter(LocationInfoContent.ITEMS, searchViewModel);
+        LocationInfoRecyclerViewAdapter adapter =
+                new LocationInfoRecyclerViewAdapter(new LocationInfoRecyclerViewAdapter.QRCodeDiff());
         view.setAdapter(adapter);
+        Context context = view.getContext();
+        view.setLayoutManager(new LinearLayoutManager(context));
 
         mAppViewModel = new ViewModelProvider(requireActivity()).get(AppViewModel.class);
-
-        mAppViewModel.getAllCodes().observe(requireActivity(), codes -> {
-            // Update the cached copy of the words in the adapter.
-            // adapter.submitList(codes)
-        });
+        // Update the cached copy of the words in the adapter.
+        mAppViewModel.getAllCodes().observe(requireActivity(), adapter::submitList);
         return root;
     }
 
     private static final String ARG_COLUMN_COUNT = "column-count";
-    private int mColumnCount = 1;
 
     @SuppressWarnings("unused")
     public static HomeFragment newInstance(int columnCount) {
@@ -83,7 +74,7 @@ public class HomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            int mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
     }
 

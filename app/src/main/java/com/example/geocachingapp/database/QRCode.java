@@ -12,25 +12,26 @@ import androidx.room.Query;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 
 @Entity
 public class QRCode {
     @PrimaryKey
     @NonNull
     @ColumnInfo(name = "id")
-    public String id;
+    public String id = "";
 
-    public QRCode() {
+    public QRCode() {}
 
-    }
-
-    public QRCode(@NonNull String hash, String name, String desc, byte[] picture, LatLng position) {
+    public QRCode(@NonNull String hash, String name, String desc,
+                  byte[] picture, double lat, double lon, ArrayList<Bitmap> pictureStorage) {
         this.id = hash;
         this.name = name;
         this.description = desc;
         this.picture = picture;
-        this.latitude = position.latitude;
-        this.longitude = position.longitude;
+        this.pictureStorage = pictureStorage;
+        this.latitude = lat;
+        this.longitude = lon;
     }
 
     public QRCode(@NonNull String hash) {
@@ -62,8 +63,8 @@ public class QRCode {
     @ColumnInfo(name = "picture")
     public byte[] picture;
 
-    public Bitmap getPicture() {
-        return BitmapFactory.decodeByteArray(picture, 0, picture.length);
+    public byte[] getPicture() {
+        return picture;
     }
 
     @ColumnInfo(name = "latitude")
@@ -72,7 +73,18 @@ public class QRCode {
     @ColumnInfo(name = "longitude")
     public double longitude;
 
-    public LatLng getPosition() {
-        return new LatLng(latitude, longitude);
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    @ColumnInfo(name = "picture_storage")
+    public ArrayList<Bitmap> pictureStorage;
+
+    public ArrayList<Bitmap> getPictureStorage() {
+        return pictureStorage;
     }
 }

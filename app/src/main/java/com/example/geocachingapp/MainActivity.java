@@ -78,5 +78,6 @@ public class MainActivity extends AppCompatActivity {
         AppDatabase mDatabase =
                 Room.inMemoryDatabaseBuilder(getApplicationContext(), AppDatabase.class).build();
         QRDao mQRDao = mDatabase.qrDao();
+        // Log.d("Main", mQRDao.loadAllQRCodes().toString() + " ");
     }
 }

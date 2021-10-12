@@ -10,18 +10,16 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import io.reactivex.rxjava3.core.Completable;
-
 @Dao
 public interface QRDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    Completable insert(QRCode qrCode);
+    void insert(QRCode qrCode);
 
     @Update
-    Completable update(QRCode qrCode);
+    void update(QRCode qrCode);
 
     @Delete
-    Completable delete(QRCode qrCode);
+    void delete(QRCode qrCode);
 
     @Query("SELECT * FROM qrcode")
     List<QRCode> loadAllQRCodes();
