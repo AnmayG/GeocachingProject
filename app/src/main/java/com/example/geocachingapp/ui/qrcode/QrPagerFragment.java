@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -25,6 +26,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 public class QrPagerFragment extends Fragment {
 
     private FragmentQrPagerBinding binding;
+    private com.example.geocachingapp.ui.qrcode.QRCodeViewModel QRCodeViewModel;
 
     private ViewPager2 viewPager;
 
@@ -33,6 +35,9 @@ public class QrPagerFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentQrPagerBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        QRCodeViewModel =
+                new ViewModelProvider(requireActivity()).get(QRCodeViewModel.class);
 
         // Instantiate a ViewPager2 and a PagerAdapter.
         viewPager = binding.pager;
@@ -54,6 +59,12 @@ public class QrPagerFragment extends Fragment {
         ).attach();
 
         return root;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        QRCodeViewModel.setReadData(null);
     }
 
     /**

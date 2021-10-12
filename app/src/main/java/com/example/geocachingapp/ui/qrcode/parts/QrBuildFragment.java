@@ -1,14 +1,17 @@
 package com.example.geocachingapp.ui.qrcode.parts;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -24,6 +27,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -33,6 +37,11 @@ import com.example.geocachingapp.R;
 import com.example.geocachingapp.database.QRCode;
 import com.example.geocachingapp.databinding.FragmentQrBuildBinding;
 import com.example.geocachingapp.ui.customViews.CircleImageView;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -105,7 +114,7 @@ public class QrBuildFragment extends Fragment {
         nameInput = binding.nameInput;
         descInput = binding.descInput;
 
-        if(nameInput.getEditText() != null) {
+        if (nameInput.getEditText() != null) {
             nameInput.getEditText().setOnKeyListener((v, keyCode, event) -> {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
                         (keyCode == KeyEvent.KEYCODE_ENTER)) {
@@ -116,9 +125,9 @@ public class QrBuildFragment extends Fragment {
             });
         }
 
-        if(descInput.getEditText() != null) {
+        if (descInput.getEditText() != null) {
             descInput.getEditText().setOnKeyListener((v, keyCode, event) -> {
-                if((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
                         (keyCode == KeyEvent.KEYCODE_ENTER)) {
                     descInput.requestFocus();
                     InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -161,19 +170,21 @@ public class QrBuildFragment extends Fragment {
         String name = Objects.requireNonNull(nameInput.getEditText()).getText().toString();
         String desc = Objects.requireNonNull(descInput.getEditText()).getText().toString();
 
-        Bitmap bmp = profilePic;
+        Bitmap bmp = profilePic.copy(profilePic.getConfig(), true);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
         byte[] profileArray = stream.toByteArray();
         bmp.recycle();
 
         // TODO: Get location
-        appViewModel.insert(new QRCode(id, name, desc, profileArray, 0, 0, pics));
+
+        appViewModel.insert(new QRCode(id, name, desc, profileArray,
+                lastLoc.getLatitude(), lastLoc.getLongitude(), pics));
     }
 
     public void readQrData(String s) {
         Log.d(TAG, s + "");
-        if(s == null) {
+        if (s == null) {
             constraintLayout.setVisibility(View.GONE);
             notScannedView.setVisibility(View.VISIBLE);
             notScannedView.setText(R.string.not_scanned_text);
@@ -186,7 +197,7 @@ public class QrBuildFragment extends Fragment {
                 notScannedView.setText(id);
                 String name = readData.getString("Name");
                 appViewModel.insert(new QRCode(id, name, "", null, 0, 0, null));
-                if(nameInput.getEditText() != null) nameInput.getEditText().setText(name);
+                if (nameInput.getEditText() != null) nameInput.getEditText().setText(name);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -194,7 +205,7 @@ public class QrBuildFragment extends Fragment {
     }
 
     public void takePicture(boolean setProfile) {
-        if(!requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
+        if (!requireActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) {
             Toast.makeText(requireContext(), "Camera not available", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -252,14 +263,14 @@ public class QrBuildFragment extends Fragment {
         int photoH = bmOptions.outHeight;
 
         // Determine how much to scale down the image
-        int scaleFactor = Math.max(1, Math.min(photoW/targetW, photoH/targetH));
+        int scaleFactor = Math.max(1, Math.min(photoW / targetW, photoH / targetH));
 
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
 
         Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath, bmOptions);
-        if(profilePic == null) profilePic = bitmap;
+        if (profilePic == null) profilePic = bitmap;
         pics.add(bitmap);
 
         imageView.setImageBitmap(bitmap);
@@ -282,4 +293,31 @@ public class QrBuildFragment extends Fragment {
         currentPhotoPath = image.getAbsolutePath();
         return image;
     }
+
+    // Begin location code
+
+    private FusedLocationProviderClient fusedLocationClient;
+    private Location lastLoc;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+        if (ActivityCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(requireContext(),
+                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(requireActivity(), location -> {
+                    // Got last known location. In some rare situations this can be null.
+                    if (location != null) {
+                        // Logic to handle location object
+                        lastLoc = location;
+                    }
+                });
+    }
+
 }
