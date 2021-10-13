@@ -13,7 +13,6 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -21,8 +20,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,20 +32,19 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.geocachingapp.AppViewModel;
-import com.example.geocachingapp.MainActivity;
 import com.example.geocachingapp.R;
 import com.example.geocachingapp.database.QRCode;
 import com.example.geocachingapp.databinding.FragmentQrBuildBinding;
 import com.example.geocachingapp.ui.customViews.CircleImageView;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.CancellationToken;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
@@ -76,7 +72,7 @@ public class QrBuildFragment extends Fragment {
     private FragmentQrBuildBinding binding;
     private com.example.geocachingapp.ui.qrcode.QRCodeViewModel QRCodeViewModel;
     private AppViewModel appViewModel;
-    private static String TAG = "QrBuildFragment";
+    private static final String TAG = "QrBuildFragment";
 
     private TextView notScannedView;
 
@@ -85,7 +81,7 @@ public class QrBuildFragment extends Fragment {
     private ImageView profileImageView;
     private TextInputLayout nameInput;
     private TextInputLayout descInput;
-    private GridView grid;
+    private RecyclerView grid;
     private FloatingActionButton cameraButton;
     private FloatingActionButton saveButton;
 
@@ -160,19 +156,12 @@ public class QrBuildFragment extends Fragment {
 
         QRCodeViewModel.getReadData().observe(requireActivity(), this::readQrData);
 
-        CustomGrid adapter = new CustomGrid(requireActivity(), pics);
         grid = binding.grid;
-        grid.setAdapter(adapter);
-        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-                System.out.println(position + " " + (+ position));
-                Toast.makeText(requireContext(), "You Clicked at " + pics.get(+ position), Toast.LENGTH_SHORT).show();
+        GalleryAdapter myAdapter = new GalleryAdapter(requireContext(), pics);
+        grid.setAdapter(myAdapter);
+        grid.setLayoutManager(new GridLayoutManager(requireContext(), 3));
 
-            }
-        });
-
+        myAdapter.notifyItemChanged(pics.size()-1);
 
         return root;
     }
@@ -278,15 +267,19 @@ public class QrBuildFragment extends Fragment {
 
     private void addToGallery() {
         if (setProfile) {
-            showInView(profileBackground);
+            profileBackground.setImageBitmap(decodeImageFile(profileBackground));
             profileImageView.setVisibility(View.GONE);
+        } else {
+            decodeImageFile(null);
+            Objects.requireNonNull(grid.getAdapter()).notifyItemInserted(pics.size() - 1);
         }
+        Log.d(TAG, pics.toString());
     }
 
-    public void showInView(ImageView imageView) {
+    public Bitmap decodeImageFile(ImageView imageView) {
         // Get the dimensions of the View
-        int targetW = imageView.getWidth();
-        int targetH = imageView.getHeight();
+        int targetW = imageView != null ? imageView.getWidth() : 100;
+        int targetH = imageView != null ? imageView.getHeight() : 100;
 
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -305,10 +298,8 @@ public class QrBuildFragment extends Fragment {
         bmOptions.inSampleSize = scaleFactor;
 
         Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath, bmOptions);
-        if (profilePic == null) profilePic = bitmap;
         pics.add(bitmap);
-
-        imageView.setImageBitmap(bitmap);
+        return bitmap;
     }
 
     private String currentPhotoPath;

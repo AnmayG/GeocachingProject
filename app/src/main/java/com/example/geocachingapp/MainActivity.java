@@ -3,21 +3,18 @@ package com.example.geocachingapp;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.example.geocachingapp.database.AppDatabase;
-import com.example.geocachingapp.database.QRCode;
-import com.example.geocachingapp.database.QRDao;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.room.Room;
 
+import com.example.geocachingapp.database.AppDatabase;
+import com.example.geocachingapp.database.QRDao;
 import com.example.geocachingapp.databinding.ActivityMainBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -73,6 +70,9 @@ public class MainActivity extends AppCompatActivity {
                 Log.w(TAG, "Failed to read value.", error.toException());
             }
         });
+
+        myRef.setValue("This is me!");
+        Log.d(TAG, myRef.getKey());
 
         // Create Room database
         AppDatabase mDatabase =

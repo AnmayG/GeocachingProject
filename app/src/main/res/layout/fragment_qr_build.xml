@@ -82,7 +82,7 @@
                 android:hint="@string/desc_field" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <GridView
+        <androidx.recyclerview.widget.RecyclerView
             android:numColumns="auto_fit"
             android:gravity="center"
             android:columnWidth="100dp"

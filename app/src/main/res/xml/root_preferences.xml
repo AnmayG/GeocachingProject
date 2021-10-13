@@ -1,34 +1,37 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory app:title="@string/messages_header" app:icon="@drawable/ic_baseline_search_24">
+    <PreferenceCategory app:title="General" app:icon="@drawable/ic_baseline_settings_24">
 
         <EditTextPreference
-            app:key="signature"
-            app:title="@string/signature_title"
+            app:key="name"
+            app:title="Name"
             app:useSimpleSummaryProvider="true" />
 
-        <ListPreference
-            app:defaultValue="reply"
-            app:entries="@array/reply_entries"
-            app:entryValues="@array/reply_values"
-            app:key="reply"
-            app:title="@string/reply_title"
-            app:useSimpleSummaryProvider="true" />
+        <Preference
+            android:title="Clear data"
+            android:key="clearData"
+            android:summary="Deletes all stored data like databases" />
+
+        <Preference
+            android:title="Clear cache"
+            android:key="clearCache"
+            android:summary="Deletes all cached data like generated QR codes" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="@string/sync_header" app:icon="@drawable/ic_baseline_settings_24">
+    <PreferenceCategory app:title="Appearance" app:icon="@drawable/ic_baseline_image_24">
 
         <SwitchPreferenceCompat
-            app:key="sync"
-            app:title="@string/sync_title" />
+            app:key="dark"
+            app:title="Dark mode"/>
 
-        <SwitchPreferenceCompat
-            app:dependency="sync"
-            app:key="attachment"
-            app:summaryOff="@string/attachment_summary_off"
-            app:summaryOn="@string/attachment_summary_on"
-            app:title="@string/attachment_title" />
+        <ListPreference
+            app:defaultValue="Light"
+            app:entries="@array/theme_entries"
+            app:entryValues="@array/theme_values"
+            app:title="Theme"
+            app:useSimpleSummaryProvider="true"/>
 
     </PreferenceCategory>
 
