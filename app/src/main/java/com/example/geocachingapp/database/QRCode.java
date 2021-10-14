@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 
 @Entity
 public class QRCode {
@@ -94,5 +95,12 @@ public class QRCode {
 
     public String getAddress() {
         return address;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return String.format(Locale.US, "\n%s\n  %s\n  %s\n  %f\n  %f\n  %s",
+                id, name, description, latitude, longitude, address);
     }
 }

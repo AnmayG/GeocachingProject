@@ -31,9 +31,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.geocachingapp.AppViewModel;
@@ -71,7 +71,7 @@ public class QrBuildFragment extends Fragment {
 
     private FragmentQrBuildBinding binding;
     private com.example.geocachingapp.ui.qrcode.QRCodeViewModel QRCodeViewModel;
-    private AppViewModel appViewModel;
+    private AppViewModel mAppViewModel;
     private static final String TAG = "QrBuildFragment";
 
     private TextView notScannedView;
@@ -79,6 +79,8 @@ public class QrBuildFragment extends Fragment {
     private ConstraintLayout constraintLayout;
     private CircleImageView profileBackground;
     private ImageView profileImageView;
+    private TextView addressView;
+    private TextView coordinatesView;
     private TextInputLayout nameInput;
     private TextInputLayout descInput;
     private RecyclerView grid;
@@ -89,11 +91,13 @@ public class QrBuildFragment extends Fragment {
     private boolean setProfile = true;
     private Bitmap profilePic;
     private final ArrayList<Bitmap> pics = new ArrayList<>();
+    private boolean cameFromCamera = false;
 
     private final ActivityResultLauncher<Intent> cameraActivityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
+                    cameFromCamera = true;
                     addToGallery();
                 }
             });
@@ -117,6 +121,8 @@ public class QrBuildFragment extends Fragment {
         profileBackground = binding.profileBackground;
         profileBackground.setOnClickListener(view -> takePicture(true));
         profileImageView = binding.profileImageView;
+        addressView = binding.addressView;
+        coordinatesView = binding.coordinatesView;
         nameInput = binding.nameInput;
         descInput = binding.descInput;
 
@@ -148,8 +154,14 @@ public class QrBuildFragment extends Fragment {
         cameraButton.setOnClickListener(view -> takePicture(false));
         saveButton = binding.saveButton;
 
-        appViewModel = new ViewModelProvider(requireActivity()).get(AppViewModel.class);
-        saveButton.setOnClickListener(view -> saveToDatabase());
+        mAppViewModel = new ViewModelProvider(requireActivity()).get(AppViewModel.class);
+        saveButton.setOnClickListener(view -> {
+            saveButton.requestFocus();
+            InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(saveButton.getWindowToken(), 0);
+            saveButton.clearFocus();
+            saveToDatabase();
+        });
 
         QRCodeViewModel =
                 new ViewModelProvider(requireActivity()).get(com.example.geocachingapp.ui.qrcode.QRCodeViewModel.class);
@@ -204,12 +216,12 @@ public class QrBuildFragment extends Fragment {
             e.printStackTrace();
         }
 
-        appViewModel.insert(new QRCode(id, name, desc, profileArray,
+        mAppViewModel.insert(new QRCode(id, name, desc, profileArray,
                 lastLoc.getLatitude(), lastLoc.getLongitude(), pics, addressThing));
     }
 
     public void readQrData(String s) {
-        Log.d(TAG, s + "");
+        Log.d(TAG, s + " readData");
         if (s == null) {
             constraintLayout.setVisibility(View.GONE);
             notScannedView.setVisibility(View.VISIBLE);
@@ -222,8 +234,50 @@ public class QrBuildFragment extends Fragment {
                 String id = readData.getString("Key");
                 notScannedView.setText(id);
                 String name = readData.getString("Name");
-                appViewModel.insert(new QRCode(id, name, "", null, 0, 0, null, ""));
-                if (nameInput.getEditText() != null) nameInput.getEditText().setText(name);
+
+                LiveData<QRCode> codeLiveData = mAppViewModel.getCode(id);
+                Log.d(TAG, "Start search " + id + " " + codeLiveData);
+                if(codeLiveData != null) {
+                    codeLiveData.observe(requireActivity(), code -> {
+                        if(code != null) {
+                            Log.d(TAG, code.toString());
+                            if (nameInput.getEditText() != null)
+                                nameInput.getEditText().setText(code.getName());
+                            if (descInput.getEditText() != null)
+                                descInput.getEditText().setText(code.getDescription());
+                            if (code.getPicture() != null) {
+                                profilePic = BitmapFactory.decodeByteArray(code.getPicture(), 0, code.getPicture().length);
+                                profileBackground.setImageBitmap(profilePic);
+                                profileImageView.setVisibility(View.GONE);
+                            }
+                            if (code.getPictureStorage() != null && !cameFromCamera) {
+                                pics.clear();
+                                pics.addAll(code.getPictureStorage());
+                                if(!pics.contains(profilePic)) pics.add(0, profilePic);
+                            }
+                        } else {
+                            mAppViewModel.insert(new QRCode(id, name, "", null, 0, 0, null, ""));
+                            if (nameInput.getEditText() != null) nameInput.getEditText().setText(name);
+                        }
+                    });
+                } else {
+                    mAppViewModel.insert(new QRCode(id, name, "", null, 0, 0, null, ""));
+                    if (nameInput.getEditText() != null) nameInput.getEditText().setText(name);
+                }
+
+                Geocoder geocoder;
+                List<Address> addresses;
+                geocoder = new Geocoder(requireContext(), Locale.getDefault());
+                String addressThing = "";
+                try {
+                    addresses = geocoder.getFromLocation(lastLoc.getLatitude(), lastLoc.getLongitude(), 1);
+                    addressThing = addresses.get(0).getAddressLine(0);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                coordinatesView.setText(String.format("Coordinates: %s, %s",
+                        lastLoc.getLatitude(), lastLoc.getLongitude()));
+                addressView.setText(String.format("Address: %s", !addressThing.equals("") ? addressThing : "None"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -267,16 +321,18 @@ public class QrBuildFragment extends Fragment {
 
     private void addToGallery() {
         if (setProfile) {
-            profileBackground.setImageBitmap(decodeImageFile(profileBackground));
+            Bitmap b = decodeLastImageFile(profileBackground);
+            profileBackground.setImageBitmap(b);
+            profilePic = b;
             profileImageView.setVisibility(View.GONE);
         } else {
-            decodeImageFile(null);
+            decodeLastImageFile(null);
             Objects.requireNonNull(grid.getAdapter()).notifyItemInserted(pics.size() - 1);
         }
         Log.d(TAG, pics.toString());
     }
 
-    public Bitmap decodeImageFile(ImageView imageView) {
+    public Bitmap decodeLastImageFile(ImageView imageView) {
         // Get the dimensions of the View
         int targetW = imageView != null ? imageView.getWidth() : 100;
         int targetH = imageView != null ? imageView.getHeight() : 100;

@@ -24,6 +24,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.geocachingapp.AppViewModel;
 import com.example.geocachingapp.R;
 import com.example.geocachingapp.databinding.FragmentSearchBinding;
 import com.google.android.gms.common.api.ApiException;
@@ -53,9 +54,13 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
 public class SearchFragment extends Fragment {
 
     private SearchViewModel searchViewModel;
+    private AppViewModel mAppViewModel;
     private FragmentSearchBinding binding;
 
     // constants
@@ -186,8 +191,8 @@ public class SearchFragment extends Fragment {
         searchViewModel.getText().observe(requireActivity(), s -> System.out.println(TAG + " " + s));
 
         // Locate the UI widgets.
-        mStartUpdatesButton = binding.startUpdatesButton;
-        mStopUpdatesButton = binding.stopUpdatesButton;
+        // mStartUpdatesButton = binding.startUpdatesButton;
+        // mStopUpdatesButton = binding.stopUpdatesButton;
         mLatitudeTextView = binding.latitudeText;
         mLongitudeTextView = binding.longitudeText;
         mLastUpdateTimeTextView = binding.lastUpdateTimeText;
@@ -197,13 +202,12 @@ public class SearchFragment extends Fragment {
         mLongitudeLabel = getResources().getString(R.string.longitude_label);
         mLastUpdateTimeLabel = getResources().getString(R.string.last_update_time_label);
 
-        mStartUpdatesButton.setOnClickListener(view -> startUpdatesButtonHandler());
-        mStopUpdatesButton.setOnClickListener(view -> stopUpdatesButtonHandler());
+        // mStartUpdatesButton.setOnClickListener(view -> startUpdatesButtonHandler());
+        // mStopUpdatesButton.setOnClickListener(view -> stopUpdatesButtonHandler());
         return root;
     }
 
     private final OnMapReadyCallback callback = new OnMapReadyCallback() {
-
         /**
          * Manipulates the map once available.
          * This callback is triggered when the map is ready to be used.
@@ -232,6 +236,8 @@ public class SearchFragment extends Fragment {
 
         updateValuesFromBundle(getArguments());
 
+        mAppViewModel = new ViewModelProvider(requireActivity()).get(AppViewModel.class);
+
         // Update values using data stored in the Bundle.
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
@@ -242,6 +248,7 @@ public class SearchFragment extends Fragment {
         createLocationCallback();
         createLocationRequest();
         buildLocationSettingsRequest();
+        startUpdatesButtonHandler();
     }
 
     @Override
@@ -357,7 +364,7 @@ public class SearchFragment extends Fragment {
                 mCurrentLocation = locationResult.getLastLocation();
                 mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
 
-                updateLocationUI();
+                updateUI();
             }
         };
     }
@@ -399,7 +406,7 @@ public class SearchFragment extends Fragment {
     public void startUpdatesButtonHandler() {
         if (!mRequestingLocationUpdates) {
             mRequestingLocationUpdates = true;
-            setButtonsEnabledState();
+            // setButtonsEnabledState();
             startLocationUpdates();
         }
     }
@@ -452,7 +459,6 @@ public class SearchFragment extends Fragment {
                             Toast.makeText(requireActivity(), errorMessage, Toast.LENGTH_LONG).show();
                             mRequestingLocationUpdates = false;
                     }
-
                     updateUI();
                 });
     }
@@ -461,8 +467,8 @@ public class SearchFragment extends Fragment {
      * Updates all UI fields.
      */
     private void updateUI() {
-        setButtonsEnabledState();
         updateLocationUI();
+        updateMapWithLocation();
     }
 
     /**
@@ -492,9 +498,6 @@ public class SearchFragment extends Fragment {
                     mCurrentLocation.getLongitude()));
             mLastUpdateTimeTextView.setText(String.format(Locale.ENGLISH, "%s: %s",
                     mLastUpdateTimeLabel, mLastUpdateTime));
-
-            // I don't know why I can't run this in updateUI() so here it is
-            updateMapWithLocation();
         }
     }
 
@@ -502,12 +505,13 @@ public class SearchFragment extends Fragment {
      * Updates the map with a marker
      */
     private void updateMapWithLocation() {
+        // Log.d(TAG, "SPEED2 " + mCurrentLocation.getSpeed());
         if (mCurrentLocation != null) {
             // If it's going too slowly then they're stopped and the marker shouldn't move.
             if (mCurrentLocation.getSpeed() > 1 || allCoordinates[0] == null) {
                 LatLng temp = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
                 allCoordinates[0] = temp;
-                System.out.println("SPEED " + mCurrentLocation.getSpeed());
+                Log.d(TAG, "SPEED " + mCurrentLocation.getSpeed());
                 currentOptions.add(temp);
                 if (currentMarker != null) currentMarker.remove();
                 currentMarker = mMap.addMarker(new MarkerOptions().position(temp).title("Last Location"));
@@ -563,7 +567,7 @@ public class SearchFragment extends Fragment {
         mFusedLocationClient.removeLocationUpdates(mLocationCallback)
                 .addOnCompleteListener(requireActivity(), task -> {
                     mRequestingLocationUpdates = false;
-                    setButtonsEnabledState();
+                    // setButtonsEnabledState();
                 });
     }
 
@@ -588,6 +592,13 @@ public class SearchFragment extends Fragment {
 
         // Remove location updates to save battery.
         stopLocationUpdates();
+    }
+
+    private final CompositeDisposable mDisposable = new CompositeDisposable();
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     /**

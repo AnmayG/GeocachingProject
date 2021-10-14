@@ -30,7 +30,7 @@ public abstract class AppDatabase extends RoomDatabase {
     static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
-    private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
+    private static final RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
@@ -41,13 +41,13 @@ public abstract class AppDatabase extends RoomDatabase {
                 // If you want to start with more words, just add them.
                 QRDao dao = INSTANCE.qrDao();
 
-                QRCode qrCode = new QRCode("asoidhfgopweh459p2h34p5h2p3h45p");
-                dao.insert(qrCode);
-                Log.d("RoomDatabase", dao.loadAllQRCodes().toString());
-                qrCode = new QRCode("q3984y312481ph1o343");
-                dao.insert(qrCode);
-
-                Log.d("RoomDatabase", dao.loadAllQRCodes().toString());
+//                QRCode qrCode = new QRCode("asoidhfgopweh459p2h34p5h2p3h45p");
+//                dao.insert(qrCode);
+//                Log.d("RoomDatabase", dao.loadAllQRCodes().toString());
+//                qrCode = new QRCode("q3984y312481ph1o343");
+//                dao.insert(qrCode);
+//
+//                Log.d("RoomDatabase", dao.loadAllQRCodes().toString());
             });
         }
     };

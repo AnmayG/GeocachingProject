@@ -5,22 +5,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.geocachingapp.AppViewModel;
 import com.example.geocachingapp.R;
 import com.example.geocachingapp.databinding.FragmentHomeBinding;
-import com.example.geocachingapp.ui.home.LocationInfoRecycler.LocationInfoContent;
 import com.example.geocachingapp.ui.search.SearchViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -78,10 +73,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            int mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
     }
 
     @Override

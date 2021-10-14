@@ -34,4 +34,14 @@ public class AppRepository {
             mQrDao.insert(code);
         });
     }
+
+    public LiveData<QRCode> loadFromId(String id) {
+        return mQrDao.loadQRCodeById(id);
+    }
+
+    public void deleteAll() {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            mQrDao.deleteAll();
+        });
+    }
 }

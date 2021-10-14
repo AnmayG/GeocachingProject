@@ -69,4 +69,6 @@
     <string name="start_tracking_button_text">Start Tracking</string>
     <string name="photo">photo</string>
     <string name="gallery_item_description">image</string>
+    <string name="coordinates_default">Coordinates: 0, 0</string>
+    <string name="address_default">Address: None</string>
 </resources>

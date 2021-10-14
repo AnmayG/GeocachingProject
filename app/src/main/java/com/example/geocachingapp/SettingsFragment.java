@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -24,6 +25,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         if (button != null) {
             button.setOnPreferenceClickListener(preference -> {
                 deleteData(requireContext());
+                AppViewModel mAppViewModel = new ViewModelProvider(requireActivity()).get(AppViewModel.class);
+                mAppViewModel.deleteAll();
                 return true;
             });
         }
