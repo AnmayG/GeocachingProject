@@ -119,7 +119,10 @@ public class QrBuildFragment extends Fragment {
         notScannedView = binding.notScannedView;
         constraintLayout = binding.formConstraintLayout;
         profileBackground = binding.profileBackground;
-        profileBackground.setOnClickListener(view -> takePicture(true));
+        profileBackground.setOnClickListener(view -> {
+            saveToDatabase();
+            takePicture(true);
+        });
         profileImageView = binding.profileImageView;
         addressView = binding.addressView;
         coordinatesView = binding.coordinatesView;
@@ -151,7 +154,10 @@ public class QrBuildFragment extends Fragment {
             });
         }
         cameraButton = binding.cameraButton;
-        cameraButton.setOnClickListener(view -> takePicture(false));
+        cameraButton.setOnClickListener(view -> {
+            saveToDatabase();
+            takePicture(false);
+        });
         saveButton = binding.saveButton;
 
         mAppViewModel = new ViewModelProvider(requireActivity()).get(AppViewModel.class);
