@@ -351,7 +351,6 @@ public class SearchFragment extends Fragment {
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
-
     /**
      * Creates a callback for receiving location events.
      */

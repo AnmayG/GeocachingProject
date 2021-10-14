@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "442813645831",
+    "firebase_url": "https://geocaching-app-17659-default-rtdb.firebaseio.com",
+    "project_id": "geocaching-app-17659",
+    "storage_bucket": "geocaching-app-17659.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:442813645831:android:5fc2db9e79339fe28856a2",
+        "android_client_info": {
+          "package_name": "com.example.geocachingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "442813645831-s9c70pik3l83ic272q1qurcndg4q7rua.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.geocachingapp",
+            "certificate_hash": "2e9d80a697bd2ac78841f4b0a1fee7787010e915"
+          }
+        },
+        {
+          "client_id": "442813645831-q3uetpo6b25shtnq0ift9qe59j0qt9ic.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMSjic2Uub3l1ROm0bQhB8qqJuC7HxZFE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "442813645831-q3uetpo6b25shtnq0ift9qe59j0qt9ic.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

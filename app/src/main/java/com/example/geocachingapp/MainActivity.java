@@ -1,10 +1,12 @@
 package com.example.geocachingapp;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -14,7 +16,9 @@ import androidx.room.Room;
 import com.example.geocachingapp.database.AppDatabase;
 import com.example.geocachingapp.database.QRDao;
 import com.example.geocachingapp.databinding.ActivityMainBinding;
+import com.example.geocachingapp.ui.ar.ArViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.ar.core.ArCoreApk;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private static final String TAG = "MainActivity";
+
+    private ArViewModel mArViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +85,20 @@ public class MainActivity extends AppCompatActivity {
         AppDatabase mDatabase =
                 Room.inMemoryDatabaseBuilder(getApplicationContext(), AppDatabase.class).build();
         QRDao mQRDao = mDatabase.qrDao();
-        // Log.d("Main", mQRDao.loadAllQRCodes().toString() + " ");
+
+        mArViewModel = new ViewModelProvider(this).get(ArViewModel.class);
+
+        canEnableArFunctionality();
+    }
+
+    public void canEnableArFunctionality() {
+        ArCoreApk.Availability availability = ArCoreApk.getInstance().checkAvailability(this);
+        if (availability.isTransient()) {
+            // Continue to query availability at 5Hz while compatibility is checked in the background.
+            new Handler().postDelayed(this::canEnableArFunctionality, 200);
+        }
+
+        // The device is unsupported or unknown.
+        mArViewModel.setArAllowed(availability.isSupported());
     }
 }

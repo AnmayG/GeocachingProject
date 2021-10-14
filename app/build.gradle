@@ -82,4 +82,7 @@ dependencies {
 
     // camview for qr scan
     implementation ('eu.livotov.labs.android:CAMView:2.0.1@aar') {transitive=true}
+
+    // ar boyyyyyyys
+    implementation 'com.google.ar:core:1.27.0'
 }
