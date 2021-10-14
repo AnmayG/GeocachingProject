@@ -20,9 +20,9 @@
 
     <fragment
         android:id="@+id/navigation_search"
-        android:name="com.example.geocachingapp.ui.search.SearchFragment"
+        android:name="com.example.geocachingapp.ui.search.SearchPagerFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search_pager" />
 
     <fragment
         android:id="@+id/navigation_qrcode"

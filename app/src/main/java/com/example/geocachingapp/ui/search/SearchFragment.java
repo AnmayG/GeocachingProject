@@ -179,6 +179,9 @@ public class SearchFragment extends Fragment {
      */
     private GeoApiContext mGeoApiContext;
 
+    public static SearchFragment newInstance() {
+        return new SearchFragment();
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {

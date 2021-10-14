@@ -259,7 +259,9 @@ public class QrBuildFragment extends Fragment {
                             if (code.getPictureStorage() != null && !cameFromCamera) {
                                 pics.clear();
                                 pics.addAll(code.getPictureStorage());
-                                if(!pics.contains(profilePic)) pics.add(0, profilePic);
+                                if (!pics.contains(profilePic) && profilePic != null) {
+                                    pics.add(0, profilePic);
+                                }
                             }
                         } else {
                             mAppViewModel.insert(new QRCode(id, name, "", null, 0, 0, null, ""));
@@ -333,8 +335,8 @@ public class QrBuildFragment extends Fragment {
             profileImageView.setVisibility(View.GONE);
         } else {
             decodeLastImageFile(null);
-            Objects.requireNonNull(grid.getAdapter()).notifyItemInserted(pics.size() - 1);
         }
+        Objects.requireNonNull(grid.getAdapter()).notifyItemInserted(pics.size() - 1);
         Log.d(TAG, pics.toString());
     }
 

@@ -71,11 +71,14 @@ public class ArFragment extends Fragment implements SensorEventListener, Locatio
     boolean locationServiceAvailable;
     private float declination;
 
+    public static ArFragment newInstance() {
+        return new ArFragment();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         FragmentArBinding binding = FragmentArBinding.inflate(inflater, container, false);
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             sensorManager = (SensorManager) requireContext().getSystemService(SENSOR_SERVICE);
