@@ -71,4 +71,6 @@
     <string name="gallery_item_description">image</string>
     <string name="coordinates_default">Coordinates: 0, 0</string>
     <string name="address_default">Address: None</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
