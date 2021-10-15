@@ -1,7 +1,9 @@
 package com.example.geocachingapp.ui.search;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -32,6 +34,7 @@ public class SearchPagerFragment extends Fragment {
 
     private static ViewPager2 viewPager;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

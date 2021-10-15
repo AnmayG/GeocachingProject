@@ -57,7 +57,10 @@
 
     <!-- bottom sheet strings -->
     <string name="print_options">Print Options</string>
-    <string name="default_print">Print Default</string>
+    <string name="default_print">Print</string>
+    <string name="default_send">Send</string>
+    <string name="print_description">This uses the android default print interface to print. Make sure to print the QR code so that it is sized correctly.</string>
+    <string name="send_description">This sends the QR code to another device or drive through your choice of communication method.</string>
 
     <!-- Configure QR Code -->
     <string name="not_scanned_text">QR Code not scanned. Please create a QR code, then scan it to finish creating your new geocache.</string>
@@ -87,6 +90,4 @@
     <string-array name="instant_placement_options_array" translatable="false">
         <item>Enable Instant Placement</item>
     </string-array>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
