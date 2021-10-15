@@ -48,6 +48,7 @@ import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.maps.model.LatLng;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -204,6 +205,7 @@ public class QrBuildFragment extends Fragment {
         byte[] profileArray = null;
         if(profilePic != null) {
             Bitmap bmp = profilePic.copy(profilePic.getConfig(), true);
+            Log.d(TAG, bmp + " " + profilePic);
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
             profileArray = stream.toByteArray();
@@ -259,9 +261,7 @@ public class QrBuildFragment extends Fragment {
                             if (code.getPictureStorage() != null && !cameFromCamera) {
                                 pics.clear();
                                 pics.addAll(code.getPictureStorage());
-                                if (!pics.contains(profilePic) && profilePic != null) {
-                                    pics.add(0, profilePic);
-                                }
+                                Log.d(TAG, pics.toString());
                             }
                         } else {
                             mAppViewModel.insert(new QRCode(id, name, "", null, 0, 0, null, ""));
@@ -277,12 +277,19 @@ public class QrBuildFragment extends Fragment {
                 List<Address> addresses;
                 geocoder = new Geocoder(requireContext(), Locale.getDefault());
                 String addressThing = "";
-                try {
-                    addresses = geocoder.getFromLocation(lastLoc.getLatitude(), lastLoc.getLongitude(), 1);
-                    addressThing = addresses.get(0).getAddressLine(0);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(lastLoc == null) {
+                    lastLoc = new Location("null");
+                    lastLoc.setLatitude(0);
+                    lastLoc.setLongitude(0);
+                } else {
+                    try {
+                        addresses = geocoder.getFromLocation(lastLoc.getLatitude(), lastLoc.getLongitude(), 1);
+                        addressThing = addresses.get(0).getAddressLine(0);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
+
                 coordinatesView.setText(String.format("Coordinates: %s, %s",
                         lastLoc.getLatitude(), lastLoc.getLongitude()));
                 addressView.setText(String.format("Address: %s", !addressThing.equals("") ? addressThing : "None"));

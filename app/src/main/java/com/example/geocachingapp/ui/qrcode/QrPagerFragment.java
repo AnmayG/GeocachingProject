@@ -28,7 +28,7 @@ public class QrPagerFragment extends Fragment {
     private FragmentQrPagerBinding binding;
     private com.example.geocachingapp.ui.qrcode.QRCodeViewModel QRCodeViewModel;
 
-    private ViewPager2 viewPager;
+    private static ViewPager2 viewPager;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -71,7 +71,7 @@ public class QrPagerFragment extends Fragment {
      * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
      * sequence.
      */
-    private static class ScreenSlidePagerAdapter extends FragmentStateAdapter {
+    public static class ScreenSlidePagerAdapter extends FragmentStateAdapter {
         public ScreenSlidePagerAdapter(FragmentActivity fa) {
             super(fa);
         }
@@ -90,6 +90,10 @@ public class QrPagerFragment extends Fragment {
         @Override
         public int getItemCount() {
             return 3;
+        }
+
+        public static void switchFragment(int target) {
+            viewPager.setCurrentItem(target);
         }
     }
 }

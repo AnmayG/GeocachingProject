@@ -5,6 +5,7 @@ import static android.Manifest.permission.VIBRATE;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.geocachingapp.databinding.FragmentQrScanBinding;
 import com.example.geocachingapp.ui.qrcode.QRCodeViewModel;
+import com.example.geocachingapp.ui.qrcode.QrPagerFragment;
 
 import eu.livotov.labs.android.camview.ScannerLiveView;
 import eu.livotov.labs.android.camview.scanner.decoder.zxing.ZXDecoder;
@@ -73,6 +75,8 @@ public class QrScanFragment extends Fragment {
     public void showQrResult(String result) {
         Toast.makeText(requireContext(), "Code scanned", Toast.LENGTH_SHORT).show();
         QRCodeViewModel.setReadData(result);
+        Handler handler = new Handler();
+        handler.postDelayed(() -> QrPagerFragment.ScreenSlidePagerAdapter.switchFragment(2), 1500);
     }
 
     @Override
