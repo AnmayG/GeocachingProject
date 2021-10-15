@@ -13,7 +13,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.geocachingapp.databinding.FragmentQrPagerBinding;
-import com.example.geocachingapp.ui.ar.ArFragment;
 import com.example.geocachingapp.ui.qrcode.QRCodeViewModel;
 import com.example.geocachingapp.ui.qrcode.parts.QrBuildFragment;
 import com.example.geocachingapp.ui.qrcode.parts.QrMakeFragment;
@@ -31,7 +30,7 @@ public class SearchPagerFragment extends Fragment {
     private com.example.geocachingapp.ui.search.SearchViewModel mSearchViewModel;
     private com.example.geocachingapp.ui.qrcode.QRCodeViewModel mQrViewModel;
 
-    private ViewPager2 viewPager;
+    private static ViewPager2 viewPager;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -78,7 +77,7 @@ public class SearchPagerFragment extends Fragment {
      * A simple pager adapter that represents 5 ScreenSlidePageFragment objects, in
      * sequence.
      */
-    private static class ScreenSlidePagerAdapter extends FragmentStateAdapter {
+    public static class ScreenSlidePagerAdapter extends FragmentStateAdapter {
         public ScreenSlidePagerAdapter(FragmentActivity fa) {
             super(fa);
         }
@@ -88,9 +87,11 @@ public class SearchPagerFragment extends Fragment {
         public Fragment createFragment(int position) {
             switch (position) {
                 case 0: return SearchFragment.newInstance();
-                case 1: return QrScanFragment.newInstance();
-                case 2: return QrBuildFragment.newInstance();
-                case 3: return ArFragment.newInstance();
+                case 1: return QrScanFragment.newInstance(true);
+                case 2: return QrBuildFragment.newInstance(true);
+                case 3:
+                    // intent to switch code
+                    break;
             }
             return QrMakeFragment.newInstance();
         }
@@ -98,6 +99,10 @@ public class SearchPagerFragment extends Fragment {
         @Override
         public int getItemCount() {
             return 4;
+        }
+
+        public static void switchFragment(int target) {
+            viewPager.setCurrentItem(target);
         }
     }
 }

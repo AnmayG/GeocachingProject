@@ -1,6 +1,7 @@
 package com.example.geocachingapp.database;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import androidx.room.TypeConverter;
 
@@ -20,6 +21,7 @@ public class Converters {
     @TypeConverter
     public static String fromArrayList(ArrayList<Bitmap> list) {
         Gson gson = new Gson();
+        Log.d("Converters", gson.toJson(list));
         return gson.toJson(list);
     }
 }

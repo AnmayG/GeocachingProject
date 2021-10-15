@@ -87,4 +87,5 @@ dependencies {
 
     // ar boyyyyyyys
     implementation 'com.google.ar:core:1.27.0'
+    implementation 'de.javagl:obj:0.2.1'
 }

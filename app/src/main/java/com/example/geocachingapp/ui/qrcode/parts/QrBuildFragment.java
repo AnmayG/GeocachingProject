@@ -41,6 +41,7 @@ import com.example.geocachingapp.R;
 import com.example.geocachingapp.database.QRCode;
 import com.example.geocachingapp.databinding.FragmentQrBuildBinding;
 import com.example.geocachingapp.ui.customViews.CircleImageView;
+import com.example.geocachingapp.ui.search.SearchViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
@@ -48,7 +49,6 @@ import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.maps.model.LatLng;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,6 +63,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import eu.livotov.labs.android.camview.ScannerLiveView;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link QrBuildFragment#newInstance} factory method to
@@ -70,13 +72,18 @@ import java.util.Objects;
  */
 public class QrBuildFragment extends Fragment {
 
-    private FragmentQrBuildBinding binding;
-    private com.example.geocachingapp.ui.qrcode.QRCodeViewModel QRCodeViewModel;
-    private AppViewModel mAppViewModel;
     private static final String TAG = "QrBuildFragment";
+    private FragmentQrBuildBinding binding;
+    private static final String ARG_SEARCH = "search";
+    private boolean mSearch;
+
+    private com.example.geocachingapp.ui.qrcode.QRCodeViewModel QRCodeViewModel;
+    private SearchViewModel mSearchViewModel;
+    private AppViewModel mAppViewModel;
+
+    private ScannerLiveView camera;
 
     private TextView notScannedView;
-
     private ConstraintLayout constraintLayout;
     private CircleImageView profileBackground;
     private ImageView profileImageView;
@@ -107,8 +114,12 @@ public class QrBuildFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static QrBuildFragment newInstance() {
-        return new QrBuildFragment();
+    public static QrBuildFragment newInstance(boolean search) {
+        QrBuildFragment fragment = new QrBuildFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_SEARCH, search);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -170,10 +181,14 @@ public class QrBuildFragment extends Fragment {
             saveToDatabase();
         });
 
-        QRCodeViewModel =
-                new ViewModelProvider(requireActivity()).get(com.example.geocachingapp.ui.qrcode.QRCodeViewModel.class);
-
-        QRCodeViewModel.getReadData().observe(requireActivity(), this::readQrData);
+        if(mSearch) {
+            mSearchViewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+            mSearchViewModel.getReadData().observe(requireActivity(), this::readQrData);
+        } else {
+            QRCodeViewModel =
+                    new ViewModelProvider(requireActivity()).get(com.example.geocachingapp.ui.qrcode.QRCodeViewModel.class);
+            QRCodeViewModel.getReadData().observe(requireActivity(), this::readQrData);
+        }
 
         grid = binding.grid;
         GalleryAdapter myAdapter = new GalleryAdapter(requireContext(), pics);
@@ -188,7 +203,11 @@ public class QrBuildFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        readQrData(QRCodeViewModel.getReadData().getValue());
+        if(mSearch) {
+            readQrData(mSearchViewModel.getReadData().getValue());
+        } else {
+            readQrData(QRCodeViewModel.getReadData().getValue());
+        }
     }
 
     public void saveToDatabase() {
@@ -399,6 +418,11 @@ public class QrBuildFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(getArguments() != null) {
+            mSearch = getArguments().getBoolean(ARG_SEARCH);
+        }
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         if (ActivityCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&

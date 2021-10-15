@@ -81,8 +81,8 @@ public class QrPagerFragment extends Fragment {
         public Fragment createFragment(int position) {
             switch (position) {
                 case 0: return QrMakeFragment.newInstance();
-                case 1: return QrScanFragment.newInstance();
-                case 2: return QrBuildFragment.newInstance();
+                case 1: return QrScanFragment.newInstance(false);
+                case 2: return QrBuildFragment.newInstance(false);
             }
             return QrMakeFragment.newInstance();
         }

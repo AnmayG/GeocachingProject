@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -20,6 +21,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.geocachingapp.databinding.FragmentQrScanBinding;
 import com.example.geocachingapp.ui.qrcode.QRCodeViewModel;
 import com.example.geocachingapp.ui.qrcode.QrPagerFragment;
+import com.example.geocachingapp.ui.search.SearchPagerFragment;
+import com.example.geocachingapp.ui.search.SearchViewModel;
 
 import eu.livotov.labs.android.camview.ScannerLiveView;
 import eu.livotov.labs.android.camview.scanner.decoder.zxing.ZXDecoder;
@@ -32,11 +35,27 @@ public class QrScanFragment extends Fragment {
 
     private FragmentQrScanBinding binding;
     private com.example.geocachingapp.ui.qrcode.QRCodeViewModel QRCodeViewModel;
+    private SearchViewModel mSearchViewModel;
+
+    private static final String ARG_SEARCH = "search";
+    private boolean mSearch;
 
     private ScannerLiveView camera;
 
-    public static QrScanFragment newInstance() {
-        return new QrScanFragment();
+    public static QrScanFragment newInstance(boolean search) {
+        QrScanFragment fragment = new QrScanFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_SEARCH, search);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if(getArguments() != null) {
+            mSearch = getArguments().getBoolean(ARG_SEARCH);
+        }
     }
 
     @Override
@@ -50,8 +69,12 @@ public class QrScanFragment extends Fragment {
             requestPermission();
         }
 
-        QRCodeViewModel =
-                new ViewModelProvider(requireActivity()).get(QRCodeViewModel.class);
+        if(mSearch) {
+            mSearchViewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+        } else {
+            QRCodeViewModel =
+                    new ViewModelProvider(requireActivity()).get(QRCodeViewModel.class);
+        }
 
         camera = binding.camview;
 
@@ -74,9 +97,19 @@ public class QrScanFragment extends Fragment {
 
     public void showQrResult(String result) {
         Toast.makeText(requireContext(), "Code scanned", Toast.LENGTH_SHORT).show();
-        QRCodeViewModel.setReadData(result);
+        if(mSearch) {
+            mSearchViewModel.setReadData(result);
+        } else {
+            QRCodeViewModel.setReadData(result);
+        }
         Handler handler = new Handler();
-        handler.postDelayed(() -> QrPagerFragment.ScreenSlidePagerAdapter.switchFragment(2), 1500);
+        handler.postDelayed(() -> {
+            if(mSearch) {
+                SearchPagerFragment.ScreenSlidePagerAdapter.switchFragment(2);
+            } else {
+                QrPagerFragment.ScreenSlidePagerAdapter.switchFragment(2);
+            }
+        }, 750);
     }
 
     @Override

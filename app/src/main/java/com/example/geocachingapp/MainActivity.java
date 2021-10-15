@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.room.Room;
@@ -18,6 +19,7 @@ import com.example.geocachingapp.database.QRDao;
 import com.example.geocachingapp.databinding.ActivityMainBinding;
 import com.example.geocachingapp.ui.ar.ArViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 import com.google.ar.core.ArCoreApk;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -32,8 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private static final String TAG = "MainActivity";
 
-    private ArViewModel mArViewModel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
@@ -85,20 +86,5 @@ public class MainActivity extends AppCompatActivity {
         AppDatabase mDatabase =
                 Room.inMemoryDatabaseBuilder(getApplicationContext(), AppDatabase.class).build();
         QRDao mQRDao = mDatabase.qrDao();
-
-        mArViewModel = new ViewModelProvider(this).get(ArViewModel.class);
-
-        canEnableArFunctionality();
-    }
-
-    public void canEnableArFunctionality() {
-        ArCoreApk.Availability availability = ArCoreApk.getInstance().checkAvailability(this);
-        if (availability.isTransient()) {
-            // Continue to query availability at 5Hz while compatibility is checked in the background.
-            new Handler().postDelayed(this::canEnableArFunctionality, 200);
-        }
-
-        // The device is unsupported or unknown.
-        mArViewModel.setArAllowed(availability.isSupported());
     }
 }
