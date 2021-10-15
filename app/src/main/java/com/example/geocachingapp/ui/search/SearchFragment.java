@@ -14,8 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -52,10 +50,8 @@ import com.google.maps.GeoApiContext;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class SearchFragment extends Fragment {
 
@@ -130,18 +126,6 @@ public class SearchFragment extends Fragment {
      */
     private Location mCurrentLocation;
 
-    // UI Widgets.
-    private Button mStartUpdatesButton;
-    private Button mStopUpdatesButton;
-    private TextView mLastUpdateTimeTextView;
-    private TextView mLatitudeTextView;
-    private TextView mLongitudeTextView;
-
-    // Labels.
-    private String mLatitudeLabel;
-    private String mLongitudeLabel;
-    private String mLastUpdateTimeLabel;
-
     /**
      * Tracks the status of the location updates request. Value changes when the user presses the
      * Start Updates and Stop Updates buttons.
@@ -193,20 +177,18 @@ public class SearchFragment extends Fragment {
 
         searchViewModel.getText().observe(requireActivity(), s -> System.out.println(TAG + " " + s));
 
-        // Locate the UI widgets.
-        // mStartUpdatesButton = binding.startUpdatesButton;
-        // mStopUpdatesButton = binding.stopUpdatesButton;
-        mLatitudeTextView = binding.latitudeText;
-        mLongitudeTextView = binding.longitudeText;
-        mLastUpdateTimeTextView = binding.lastUpdateTimeText;
+        binding.button.setOnClickListener(v -> {
+            Uri gmmIntentUri = Uri.parse("google.navigation:q=" +
+                    target.getLatitude() + "," + target.getLongitude());
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            startActivity(mapIntent);
+        });
 
-        // Set labels.
-        mLatitudeLabel = getResources().getString(R.string.latitude_label);
-        mLongitudeLabel = getResources().getString(R.string.longitude_label);
-        mLastUpdateTimeLabel = getResources().getString(R.string.last_update_time_label);
+        binding.scanButton.setOnClickListener(v -> {
+            SearchPagerFragment.ScreenSlidePagerAdapter.switchFragment(1);
+        });
 
-        // mStartUpdatesButton.setOnClickListener(view -> startUpdatesButtonHandler());
-        // mStopUpdatesButton.setOnClickListener(view -> stopUpdatesButtonHandler());
         return root;
     }
 
@@ -414,16 +396,6 @@ public class SearchFragment extends Fragment {
     }
 
     /**
-     * Handles the Stop Updates button, and requests removal of location updates.
-     */
-    public void stopUpdatesButtonHandler() {
-        // It is a good practice to remove location requests when the activity is in a paused or
-        // stopped state. Doing so helps battery performance and is especially
-        // recommended in applications that request frequent location updates.
-        stopLocationUpdates();
-    }
-
-    /**
      * Requests location updates from the FusedLocationApi. Note: we don't call this unless location
      * runtime permission has been granted.
      */
@@ -469,38 +441,7 @@ public class SearchFragment extends Fragment {
      * Updates all UI fields.
      */
     private void updateUI() {
-        updateLocationUI();
         updateMapWithLocation();
-    }
-
-    /**
-     * Disables both buttons when functionality is disabled due to insuffucient location settings.
-     * Otherwise ensures that only one button is enabled at any time. The Start Updates button is
-     * enabled if the user is not requesting location updates. The Stop Updates button is enabled
-     * if the user is requesting location updates.
-     */
-    private void setButtonsEnabledState() {
-        if (mRequestingLocationUpdates) {
-            mStartUpdatesButton.setEnabled(false);
-            mStopUpdatesButton.setEnabled(true);
-        } else {
-            mStartUpdatesButton.setEnabled(true);
-            mStopUpdatesButton.setEnabled(false);
-        }
-    }
-
-    /**
-     * Sets the value of the UI fields for the location latitude, longitude and last update time.
-     */
-    private void updateLocationUI() {
-        if (mCurrentLocation != null) {
-            mLatitudeTextView.setText(String.format(Locale.ENGLISH, "%s: %f", mLatitudeLabel,
-                    mCurrentLocation.getLatitude()));
-            mLongitudeTextView.setText(String.format(Locale.ENGLISH, "%s: %f", mLongitudeLabel,
-                    mCurrentLocation.getLongitude()));
-            mLastUpdateTimeTextView.setText(String.format(Locale.ENGLISH, "%s: %s",
-                    mLastUpdateTimeLabel, mLastUpdateTime));
-        }
     }
 
     /**
@@ -510,6 +451,7 @@ public class SearchFragment extends Fragment {
         // Log.d(TAG, "SPEED2 " + mCurrentLocation.getSpeed());
         if (mCurrentLocation != null) {
             // If it's going too slowly then they're stopped and the marker shouldn't move.
+            Log.d(TAG, mCurrentLocation.getSpeed() + " " + allCoordinates[0]);
             if (mCurrentLocation.getSpeed() > 1 || allCoordinates[0] == null) {
                 LatLng temp = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
                 allCoordinates[0] = temp;

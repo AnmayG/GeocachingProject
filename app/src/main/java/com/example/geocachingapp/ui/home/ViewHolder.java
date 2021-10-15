@@ -42,13 +42,13 @@ public class ViewHolder extends RecyclerView.ViewHolder {
         });
     }
 
-    public void bind(String name, String desc, String hash, byte[] picture, double lat, double lon, String addr) {
+    public void bind(String name, String desc, String hash, Bitmap picture, double lat, double lon, String addr) {
         mIdView.setText(name);
         mContentView.setText(addr);
         address = addr;
         if(picture != null) {
-            img = BitmapFactory.decodeByteArray(picture, 0, picture.length);
-            mImageView.setImageBitmap(img);
+            img = picture;
+            mImageView.setImageBitmap(picture);
         }
         mItem = new LocationInfoContent.LocationInfo(hash, name, desc, lat, lon);
     }

@@ -38,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.geocachingapp.AppViewModel;
 import com.example.geocachingapp.R;
+import com.example.geocachingapp.database.Converters;
 import com.example.geocachingapp.database.QRCode;
 import com.example.geocachingapp.databinding.FragmentQrBuildBinding;
 import com.example.geocachingapp.ui.customViews.CircleImageView;
@@ -55,7 +56,9 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -178,6 +181,8 @@ public class QrBuildFragment extends Fragment {
             InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(saveButton.getWindowToken(), 0);
             saveButton.clearFocus();
+
+            Toast.makeText(requireContext(), "Saved!", Toast.LENGTH_SHORT).show();
             saveToDatabase();
         });
 
@@ -221,16 +226,6 @@ public class QrBuildFragment extends Fragment {
         String name = Objects.requireNonNull(nameInput.getEditText()).getText().toString();
         String desc = Objects.requireNonNull(descInput.getEditText()).getText().toString();
 
-        byte[] profileArray = null;
-        if(profilePic != null) {
-            Bitmap bmp = profilePic.copy(profilePic.getConfig(), true);
-            Log.d(TAG, bmp + " " + profilePic);
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            profileArray = stream.toByteArray();
-            bmp.recycle();
-        }
-
         Geocoder geocoder;
         List<Address> addresses;
         geocoder = new Geocoder(requireContext(), Locale.getDefault());
@@ -243,8 +238,12 @@ public class QrBuildFragment extends Fragment {
             e.printStackTrace();
         }
 
-        mAppViewModel.insert(new QRCode(id, name, desc, profileArray,
-                lastLoc.getLatitude(), lastLoc.getLongitude(), pics, addressThing));
+        ArrayList<String> imageSources = new ArrayList<>();
+        for (int i = 0; i < pics.size(); i++) {
+            imageSources.add(Converters.BitMapToString(pics.get(i)));
+        }
+        mAppViewModel.insert(new QRCode(id, name, desc, profilePic,
+                lastLoc.getLatitude(), lastLoc.getLongitude(), imageSources, addressThing));
     }
 
     public void readQrData(String s) {
@@ -273,13 +272,18 @@ public class QrBuildFragment extends Fragment {
                             if (descInput.getEditText() != null)
                                 descInput.getEditText().setText(code.getDescription());
                             if (code.getPicture() != null) {
-                                profilePic = BitmapFactory.decodeByteArray(code.getPicture(), 0, code.getPicture().length);
+                                profilePic = code.getPicture();
                                 profileBackground.setImageBitmap(profilePic);
                                 profileImageView.setVisibility(View.GONE);
                             }
                             if (code.getPictureStorage() != null && !cameFromCamera) {
                                 pics.clear();
-                                pics.addAll(code.getPictureStorage());
+                                ArrayList<Bitmap> bitmaps = new ArrayList<>();
+                                for (int i = 0; i < code.getPictureStorage().size(); i++) {
+                                    Log.d(TAG, code.getPictureStorage().get(i).toString());
+                                    bitmaps.add(Converters.StringToBitMap(code.getPictureStorage().get(i)));
+                                }
+                                pics.addAll(bitmaps);
                                 Log.d(TAG, pics.toString());
                             }
                         } else {

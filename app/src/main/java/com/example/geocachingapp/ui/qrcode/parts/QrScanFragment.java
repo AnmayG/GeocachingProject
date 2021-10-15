@@ -6,6 +6,7 @@ import static android.Manifest.permission.VIBRATE;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,9 @@ import com.example.geocachingapp.ui.qrcode.QRCodeViewModel;
 import com.example.geocachingapp.ui.qrcode.QrPagerFragment;
 import com.example.geocachingapp.ui.search.SearchPagerFragment;
 import com.example.geocachingapp.ui.search.SearchViewModel;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import eu.livotov.labs.android.camview.ScannerLiveView;
 import eu.livotov.labs.android.camview.scanner.decoder.zxing.ZXDecoder;
@@ -61,7 +65,7 @@ public class QrScanFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-                // Inflate the layout for this fragment
+        // Inflate the layout for this fragment
         binding = FragmentQrScanBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
@@ -96,6 +100,19 @@ public class QrScanFragment extends Fragment {
     }
 
     public void showQrResult(String result) {
+        try {
+            JSONObject readData = new JSONObject(result);
+            String id = readData.getString("Key");
+            if(id.equals("")) {
+                Toast.makeText(requireContext(), "Invalid Geocache Code", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(requireContext(), "Invalid Geocache Code", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Toast.makeText(requireContext(), "Code scanned", Toast.LENGTH_SHORT).show();
         if(mSearch) {
             mSearchViewModel.setReadData(result);

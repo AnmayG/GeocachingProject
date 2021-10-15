@@ -25,7 +25,7 @@ public class QRCode {
     public QRCode() {}
 
     public QRCode(@NonNull String hash, String name, String desc,
-                  byte[] picture, double lat, double lon, ArrayList<Bitmap> pictureStorage, String addr) {
+                  Bitmap picture, double lat, double lon, ArrayList<String> pictureStorage, String addr) {
         this.id = hash;
         this.name = name;
         this.description = desc;
@@ -63,9 +63,9 @@ public class QRCode {
     }
 
     @ColumnInfo(name = "picture")
-    public byte[] picture;
+    public Bitmap picture;
 
-    public byte[] getPicture() {
+    public Bitmap getPicture() {
         return picture;
     }
 
@@ -84,9 +84,9 @@ public class QRCode {
     }
 
     @ColumnInfo(name = "picture_storage")
-    public ArrayList<Bitmap> pictureStorage;
+    public ArrayList<String> pictureStorage;
 
-    public ArrayList<Bitmap> getPictureStorage() {
+    public ArrayList<String> getPictureStorage() {
         return pictureStorage;
     }
 
