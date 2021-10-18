@@ -1,11 +1,7 @@
 package com.example.geocachingapp;
 
-import static android.content.Context.ACTIVITY_SERVICE;
-
-import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;

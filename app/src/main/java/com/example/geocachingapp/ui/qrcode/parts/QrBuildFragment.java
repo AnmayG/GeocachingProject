@@ -50,6 +50,7 @@ import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.maps.model.LatLng;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -296,23 +297,14 @@ public class QrBuildFragment extends Fragment {
                     if (nameInput.getEditText() != null) nameInput.getEditText().setText(name);
                 }
 
-                Geocoder geocoder;
-                List<Address> addresses;
-                geocoder = new Geocoder(requireContext(), Locale.getDefault());
                 String addressThing = "";
                 if(lastLoc == null) {
                     lastLoc = new Location("null");
                     lastLoc.setLatitude(0);
                     lastLoc.setLongitude(0);
                 } else {
-                    try {
-                        addresses = geocoder.getFromLocation(lastLoc.getLatitude(), lastLoc.getLongitude(), 1);
-                        addressThing = addresses.get(0).getAddressLine(0);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    addressThing = getAddress(lastLoc);
                 }
-
                 coordinatesView.setText(String.format("Coordinates: %s, %s",
                         lastLoc.getLatitude(), lastLoc.getLongitude()));
                 addressView.setText(String.format("Address: %s", !addressThing.equals("") ? addressThing : "None"));
@@ -320,6 +312,20 @@ public class QrBuildFragment extends Fragment {
                 e.printStackTrace();
             }
         }
+    }
+
+    public String getAddress(Location l) {
+        Geocoder geocoder;
+        List<Address> addresses;
+        geocoder = new Geocoder(requireContext(), Locale.getDefault());
+        String addressThing = "";
+        try {
+            addresses = geocoder.getFromLocation(l.getLatitude(), l.getLongitude(), 1);
+            addressThing = addresses.get(0).getAddressLine(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return addressThing;
     }
 
     public void takePicture(boolean setProfile) {

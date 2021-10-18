@@ -132,7 +132,7 @@ public class QrMakeFragment extends Fragment {
     }
 
     // https://stackoverflow.com/questions/20536566/creating-a-random-string-with-a-z-and-0-9-in-java/20536597
-    protected String getSaltString() {
+    public static String getSaltString() {
         String saltChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
         StringBuilder salt = new StringBuilder();
         Random rnd = new Random();
@@ -143,7 +143,7 @@ public class QrMakeFragment extends Fragment {
         return salt.toString();
     }
 
-    public String generateVerificationKey(String str) throws NoSuchAlgorithmException,
+    public static String generateVerificationKey(String str) throws NoSuchAlgorithmException,
                                                              InvalidKeySpecException {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];

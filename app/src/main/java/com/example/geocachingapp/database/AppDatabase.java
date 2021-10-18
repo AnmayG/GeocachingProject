@@ -1,16 +1,26 @@
 package com.example.geocachingapp.database;
 
 import android.content.Context;
+import android.os.Build;
+import android.os.Environment;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.room.AutoMigration;
+import androidx.annotation.RequiresApi;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.example.geocachingapp.ui.qrcode.parts.QrMakeFragment;
+import com.opencsv.CSVReader;
+
+import java.io.File;
+import java.io.FileReader;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -31,6 +41,7 @@ public abstract class AppDatabase extends RoomDatabase {
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
     private static final RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
+        @RequiresApi(api = Build.VERSION_CODES.O)
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
@@ -40,14 +51,6 @@ public abstract class AppDatabase extends RoomDatabase {
                 // Populate the database in the background.
                 // If you want to start with more words, just add them.
                 QRDao dao = INSTANCE.qrDao();
-
-//                QRCode qrCode = new QRCode("asoidhfgopweh459p2h34p5h2p3h45p");
-//                dao.insert(qrCode);
-//                Log.d("RoomDatabase", dao.loadAllQRCodes().toString());
-//                qrCode = new QRCode("q3984y312481ph1o343");
-//                dao.insert(qrCode);
-//
-//                Log.d("RoomDatabase", dao.loadAllQRCodes().toString());
             });
         }
     };

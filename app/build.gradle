@@ -59,6 +59,7 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version_mac"
     annotationProcessor "androidx.room:room-compiler:$room_version_mac"
     implementation "androidx.room:room-rxjava3:$room_add_version"
+    implementation 'com.opencsv:opencsv:4.6'
 
     // google maps
     implementation 'com.google.maps:google-maps-services:1.0.0'

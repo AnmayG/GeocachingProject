@@ -1,7 +1,9 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <PreferenceCategory app:title="General" app:icon="@drawable/ic_baseline_settings_24">
+    <PreferenceCategory
+        app:icon="@drawable/ic_baseline_settings_24"
+        app:title="General">
 
         <EditTextPreference
             app:key="name"
@@ -9,30 +11,31 @@
             app:useSimpleSummaryProvider="true" />
 
         <Preference
-            android:title="Clear data"
             android:key="clearData"
-            android:summary="Deletes all stored data like databases" />
+            android:summary="Deletes all stored data like databases"
+            android:title="Clear data" />
 
         <Preference
-            android:title="Clear cache"
             android:key="clearCache"
-            android:summary="Deletes all cached data like generated QR codes" />
+            android:summary="Deletes all cached data like generated QR codes"
+            android:title="Clear cache" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory app:title="Appearance" app:icon="@drawable/ic_baseline_image_24">
+    <PreferenceCategory
+        app:icon="@drawable/ic_baseline_image_24"
+        app:title="Appearance">
 
         <SwitchPreferenceCompat
             app:key="dark"
-            app:title="Dark mode"/>
+            app:title="Dark mode" />
 
         <ListPreference
             app:defaultValue="Light"
             app:entries="@array/theme_entries"
             app:entryValues="@array/theme_values"
+            app:key="themes"
             app:title="Theme"
-            app:useSimpleSummaryProvider="true"/>
-
+            app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
-
 </PreferenceScreen>

@@ -89,6 +89,7 @@
     <string name="options_title_instant_placement" translatable="false">Instant Placement options</string>
     <string name="open_maps_desc">Open in Google Maps</string>
     <string name="scan_code_button">Scan Code</string>
+    <string name="default_print_description">Either print or send your new QR code so that others can find it.</string>
     <string-array name="instant_placement_options_array" translatable="false">
         <item>Enable Instant Placement</item>
     </string-array>

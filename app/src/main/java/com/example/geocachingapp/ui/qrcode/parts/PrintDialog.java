@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,9 +24,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 public class PrintDialog extends BottomSheetDialogFragment {
 
     private com.example.geocachingapp.ui.qrcode.QRCodeViewModel QRCodeViewModel;
+    private static final String TAG = "PrintDialog";
 
-    private Button printButton;
-    private Button sendButton;
     private TextView description;
 
     private int printClicks = 0;
@@ -38,14 +38,15 @@ public class PrintDialog extends BottomSheetDialogFragment {
         View v = inflater.inflate(R.layout.bottom_modal_print_sheet,
                 container, false);
 
-        printButton = v.findViewById(R.id.print_button);
-        sendButton = v.findViewById(R.id.send_button);
+        Button printButton = v.findViewById(R.id.print_button);
+        Button sendButton = v.findViewById(R.id.send_button);
         description = v.findViewById(R.id.description);
 
         QRCodeViewModel =
                 new ViewModelProvider(requireActivity()).get(QRCodeViewModel.class);
 
         printButton.setOnClickListener(v1 -> {
+            sendClicks = 0;
             printClicks ++;
             if(printClicks > 1) {
                 Bitmap codeBitmap = QRCodeViewModel.getQrCode().getValue();
@@ -65,6 +66,7 @@ public class PrintDialog extends BottomSheetDialogFragment {
         });
 
         sendButton.setOnClickListener(v1 -> {
+            printClicks = 0;
             sendClicks++;
             if(sendClicks > 1) {
                 Bitmap codeBitmap = QRCodeViewModel.getQrCode().getValue();
@@ -76,10 +78,12 @@ public class PrintDialog extends BottomSheetDialogFragment {
                 }
                 String pathofBmp = MediaStore.Images.Media.insertImage(requireActivity().getContentResolver(), codeBitmap,"QR Code", null);
                 Uri bmpUri = Uri.parse(pathofBmp);
+                Log.d("PrintDialog", bmpUri.toString());
                 final Intent emailIntent1 = new Intent(android.content.Intent.ACTION_SEND);
                 emailIntent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 emailIntent1.putExtra(Intent.EXTRA_STREAM, bmpUri);
                 emailIntent1.setType("image/png");
+                startActivity(emailIntent1);
                 dismiss();
             } else {
                 description.setText(R.string.send_description);

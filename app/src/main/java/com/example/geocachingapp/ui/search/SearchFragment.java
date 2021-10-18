@@ -56,7 +56,6 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 public class SearchFragment extends Fragment {
 
     private SearchViewModel searchViewModel;
-    private AppViewModel mAppViewModel;
     private FragmentSearchBinding binding;
 
     // constants
@@ -220,8 +219,6 @@ public class SearchFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         updateValuesFromBundle(getArguments());
-
-        mAppViewModel = new ViewModelProvider(requireActivity()).get(AppViewModel.class);
 
         // Update values using data stored in the Bundle.
 
@@ -537,8 +534,6 @@ public class SearchFragment extends Fragment {
         // Remove location updates to save battery.
         stopLocationUpdates();
     }
-
-    private final CompositeDisposable mDisposable = new CompositeDisposable();
 
     @Override
     public void onStart() {
